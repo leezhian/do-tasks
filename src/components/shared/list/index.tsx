@@ -1,25 +1,52 @@
+/*
+ * @Author: kim
+ * @Date: 2023-07-22 01:46:37
+ * @Description: 列表
+ */
+import { useMemo } from 'react'
 import type { ReactNode } from 'react'
+import ContentEmpty from '@/assets/images/content-empty.svg'
+import Empty from '@/components/shared/empty'
 
 export interface ListProps {
   className?: string
   dataSource?: any[]
   renderItem?: (item: any) => ReactNode
+  renderEmpty?: ReactNode // 自定义空状态
+  loading?: boolean
 }
 
 function List(props: ListProps) {
-  const { className, dataSource = [], renderItem } = props
+  const {
+    className,
+    dataSource = [],
+    renderItem,
+    renderEmpty,
+    loading = false,
+  } = props
 
-  return (
-    <ul className={className}>
-      {dataSource.map((item) => {
+  const content = useMemo(() => {
+    if (loading)
+      return <div className='text-center'><span className="loading loading-spinner loading-md"></span></div>
+
+    if (dataSource.length) {
+      return dataSource.map((item) => {
         return renderItem ? (
           renderItem(item)
         ) : (
           <li key={item.id}>{item.name}</li>
         )
-      })}
-    </ul>
-  )
+      })
+    }
+
+    return renderEmpty ? (
+      renderEmpty
+    ) : (
+      <Empty image={ContentEmpty} description="暂无内容" />
+    )
+  }, [dataSource, renderItem, renderEmpty, loading])
+
+  return <ul className={className}>{content}</ul>
 }
 
 export default List
