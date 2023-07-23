@@ -3,8 +3,16 @@ export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        'border-base': 'rgb(229 231 235 / <alpha-value>)',
+      width: {
+        64: '16rem',
+      },
+      borderRadius: {
+        unset: 'unset',
+        inherit: 'inherit',
+      },
+      gridTemplateColumns: {
+        'auto-fit-flex': 'repeat(auto-fit, minmax(256px, 1fr))',
+        'auto-fit-fixed': 'repeat(auto-fit, minmax(256px, 256px))',
       }
     },
   },

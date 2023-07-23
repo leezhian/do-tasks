@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer components {
+  #root {
+    @apply flex;
+  }
+
   .bg-hero {
     background-size: cover;
     background-image: url('@/assets/images/hero.jpg');

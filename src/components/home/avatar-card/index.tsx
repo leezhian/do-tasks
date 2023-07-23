@@ -27,10 +27,10 @@ function AvatarCard(props: AvatarCardProps) {
       <div className="flex items-center">
         <div className="avatar placeholder shrink-0">
           <div className="w-12 rounded-full bg-neutral-focus text-neutral-content">
-            <span className="text-xs">AA</span>
+            <span className="text-xs">靓</span>
           </div>
         </div>
-        <div className="grow pl-2 text-lg">AAAAAAA</div>
+        <div className="grow pl-2 text-lg truncate">即将暴富的靓仔</div>
       </div>
 
       <div className="mt-3 flex items-center justify-between">
