@@ -49,17 +49,33 @@ function TeamList(props: ListProps) {
   const { dataSource = demoList } = props
   const [activeTeamId, setActiveTeamId] = useState<number | null>()
 
-  const handleToggleTeam = useCallback((teamInfo: any) => {
-    if(activeTeamId === teamInfo.id) return
-    setActiveTeamId(teamInfo.id)
-  }, [activeTeamId])
+  const handleToggleTeam = useCallback(
+    (teamInfo: any) => {
+      if (activeTeamId === teamInfo.id) return
+      setActiveTeamId(teamInfo.id)
+    },
+    [activeTeamId],
+  )
 
   const renderTeamItem = (item: any) => {
-    return <TeamItem className={`tw-team-list-item ${activeTeamId === item.id ? 'active' : ''}`} data={item} key={item.id} onClick={handleToggleTeam} />
+    return (
+      <TeamItem
+        className={`tw-team-list-item ${
+          activeTeamId === item.id ? 'active' : ''
+        }`}
+        data={item}
+        key={item.id}
+        onClick={handleToggleTeam}
+      />
+    )
   }
 
   return (
-    <List className='text-sm' dataSource={dataSource} renderItem={renderTeamItem}/>
+    <List
+      className="text-sm"
+      dataSource={dataSource}
+      renderItem={renderTeamItem}
+    />
   )
 }
 

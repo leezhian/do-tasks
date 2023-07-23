@@ -30,18 +30,25 @@ const defaultFormat = (percent: number) => {
 }
 
 function CircleProgress(props: CircleProgressProps) {
-  const { percent = 0, secPercent = 0, className, format = defaultFormat, showInfo = true } = props
+  const {
+    percent = 0,
+    secPercent = 0,
+    className,
+    format = defaultFormat,
+    showInfo = true,
+  } = props
 
   const computedDashoffset = useCallback((p: number) => {
-    return (100 - p) / 100 * strokeLength // 计算缺口长度
+    return ((100 - p) / 100) * strokeLength // 计算缺口长度
   }, [])
 
   return (
-
-    <div className={`relative h-20 w-20 overflow-hidden rounded-full ${className}`}>
+    <div
+      className={`relative h-20 w-20 overflow-hidden rounded-full ${className}`}
+    >
       <svg viewBox="-50 -50 100 100" role="presentation">
         <circle
-          className='stroke-base-200'
+          className="stroke-base-200"
           r="47"
           cx="0"
           cy="0"
@@ -53,7 +60,7 @@ function CircleProgress(props: CircleProgressProps) {
           }}
         ></circle>
         <circle
-          className='stroke-info'
+          className="stroke-info"
           r="47"
           cx="0"
           cy="0"
@@ -66,21 +73,27 @@ function CircleProgress(props: CircleProgressProps) {
           }}
         ></circle>
 
-        {secPercent > 0 && <circle
-          className='stroke-error'
-          r="47"
-          cx="0"
-          cy="0"
-          strokeLinecap="round"
-          strokeWidth="6"
-          opacity="1"
-          style={{
-            ...circleBaseStyle,
-            strokeDashoffset: computedDashoffset(secPercent),
-          }}
-        ></circle>}
+        {secPercent > 0 && (
+          <circle
+            className="stroke-error"
+            r="47"
+            cx="0"
+            cy="0"
+            strokeLinecap="round"
+            strokeWidth="6"
+            opacity="1"
+            style={{
+              ...circleBaseStyle,
+              strokeDashoffset: computedDashoffset(secPercent),
+            }}
+          ></circle>
+        )}
       </svg>
-      {showInfo && <span className='absolute w-full text-center -translate-y-1/2 start-0 [inset-block-start:50%]'>{format(percent, secPercent)}</span>}
+      {showInfo && (
+        <span className="absolute start-0 w-full -translate-y-1/2 text-center [inset-block-start:50%]">
+          {format(percent, secPercent)}
+        </span>
+      )}
     </div>
   )
 }

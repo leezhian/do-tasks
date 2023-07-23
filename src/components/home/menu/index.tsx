@@ -26,7 +26,7 @@ function Menu() {
 
         <div className="flex grow flex-col overflow-hidden">
           <div className="flex shrink-0 items-center justify-between px-4 font-semibold">
-            <h3 className="font-semibold">团队</h3>
+            <h3 className="text-base font-semibold">团队</h3>
             <div className="sm:tooltip sm:tooltip-bottom" data-tip="创建团队">
               <button className="btn btn-ghost btn-xs">
                 <PlusIcon className="h-5 w-5" />

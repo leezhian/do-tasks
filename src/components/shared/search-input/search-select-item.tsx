@@ -42,10 +42,10 @@ function SearchSelectItem(props: SearchSelectItemProps) {
 
   return (
     <li className="flex  w-full cursor-pointer items-center px-2 py-1.5 hover:bg-base-content/10">
-      { !!badgeConfig.name && <div className={badgeConfig.classes}>{ badgeConfig.name }</div>}
-      <span className="w-full truncate">
-        {data?.title}
-      </span>
+      {!!badgeConfig.name && (
+        <div className={badgeConfig.classes}>{badgeConfig.name}</div>
+      )}
+      <span className="w-full truncate">{data?.title}</span>
     </li>
   )
 }

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply text-sm;
+}
+
 @layer components {
   #root {
     @apply flex;

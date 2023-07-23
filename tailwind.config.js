@@ -5,6 +5,10 @@ export default {
     extend: {
       width: {
         64: '16rem',
+        130: '32.5rem',
+      },
+      maxWidth: {
+        modal: 'calc(100vw - 32px)'
       },
       borderRadius: {
         unset: 'unset',

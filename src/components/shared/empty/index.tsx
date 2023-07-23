@@ -32,7 +32,9 @@ function Empty(props: EmptyProps) {
 
   return (
     <div className="select-none text-center text-sm text-neutral-content">
-      <div className="h-20" style={imageStyle}>{imgNode}</div>
+      <div className="h-20" style={imageStyle}>
+        {imgNode}
+      </div>
       <div>{description}</div>
     </div>
   )

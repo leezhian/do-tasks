@@ -27,7 +27,11 @@ function List(props: ListProps) {
 
   const content = useMemo(() => {
     if (loading)
-      return <div className='text-center'><span className="loading loading-spinner loading-md"></span></div>
+      return (
+        <div className="text-center">
+          <span className="loading loading-spinner loading-md"></span>
+        </div>
+      )
 
     if (dataSource.length) {
       return dataSource.map((item) => {
