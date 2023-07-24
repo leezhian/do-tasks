@@ -3,7 +3,7 @@
  * @Date: 2023-07-22 10:50:34
  * @Description: 搜索框
  */
-import { useMemo, useCallback, useState } from 'react'
+import { useMemo, useCallback, useState, useEffect, useRef } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import List from '@/components/shared/list'
 import SearchSelectItem from './search-select-item'
@@ -12,6 +12,7 @@ import SearchEmpty from '@/assets/images/search-empty.svg'
 
 interface SearchInputProps {
   className?: string
+  onSearchItem?: (item: any) => void
 }
 
 const demoList = [
@@ -33,8 +34,24 @@ const demoList = [
 ]
 
 function SearchInput(props: SearchInputProps) {
-  const { className } = props
+  const { className, onSearchItem } = props
+  const searchWrapRef = useRef<HTMLDivElement>(null)
   const [searchSelectVisiable, setSearchSelectVisiable] = useState(false)
+
+  // 点击区域外关闭搜索下拉列表
+  const searchBlur = useCallback((e: any) => {
+    if(searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
+      setSearchSelectVisiable(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener('click', searchBlur)
+
+    return () => {
+      document.removeEventListener('click', searchBlur)
+    }
+  }, [searchBlur])
 
   const classes = useMemo(() => {
     const cls = ['relative rounded-lg bg-base-200']
@@ -46,10 +63,17 @@ function SearchInput(props: SearchInputProps) {
     return cls.join(' ')
   }, [className])
 
+  const handleSearchItemClick = (item: any) => {
+    setSearchSelectVisiable(false)
+    onSearchItem && onSearchItem(item)
+  }
+
+  // 渲染搜索下拉列表项
   const renderSearchSelectItem = useCallback((item: any) => {
-    return <SearchSelectItem key={item.id} data={item} />
+    return <SearchSelectItem onClick={handleSearchItemClick} key={item.id} data={item} />
   }, [])
 
+  // 搜索下拉列表显示隐藏
   const toggleSearchSelectVisiable = useCallback(
     () => setSearchSelectVisiable((prev) => !prev),
     [],
@@ -60,7 +84,7 @@ function SearchInput(props: SearchInputProps) {
   }, [])
 
   return (
-    <div className={classes}>
+    <div className={classes} ref={searchWrapRef}>
       <label className="flex w-full items-center pl-3">
         <MagnifyingGlassIcon className="h-6 w-6" />
         <input
@@ -68,7 +92,7 @@ function SearchInput(props: SearchInputProps) {
           placeholder="搜索任务 / 团队"
           className="input input-md w-full bg-transparent px-3 focus:outline-0"
           onFocus={toggleSearchSelectVisiable}
-          onBlur={toggleSearchSelectVisiable}
+          // onBlur={toggleSearchSelectVisiable}
           onChange={handleSearch}
         />
       </label>

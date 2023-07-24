@@ -5,7 +5,7 @@ function Layout() {
   return (
     <>
       <Menu />
-      <div className="min-h-screen grow">
+      <div className=" md:min-h-screen grow">
         <Outlet />
       </div>
     </>

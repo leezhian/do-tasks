@@ -8,7 +8,7 @@ body {
 
 @layer components {
   #root {
-    @apply flex;
+    @apply flex flex-col md:flex-row;
   }
 
   .bg-hero {

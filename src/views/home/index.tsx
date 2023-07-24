@@ -50,7 +50,7 @@ function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen grow" ref={containerRef}>
+    <div ref={containerRef}>
       <div className="flex w-full items-center p-4">
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           <PlusIcon className="h-6 w-6" />

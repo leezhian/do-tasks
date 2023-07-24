@@ -14,6 +14,13 @@ export default {
         unset: 'unset',
         inherit: 'inherit',
       },
+      zIndex: {
+        60: 60,
+        70: 70,
+        80: 80,
+        90: 90,
+        infinity: 9999,
+      },
       gridTemplateColumns: {
         'auto-fit-flex': 'repeat(auto-fit, minmax(256px, 1fr))',
         'auto-fit-fixed': 'repeat(auto-fit, minmax(256px, 256px))',

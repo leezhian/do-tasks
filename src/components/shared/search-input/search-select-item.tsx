@@ -3,10 +3,11 @@
  * @Date: 2023-07-22 11:48:58
  * @Description: 搜索结果选项
  */
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 export interface SearchSelectItemProps {
   data?: any
+  onClick?: (item: any) => void
 }
 
 export enum SearchType {
@@ -15,7 +16,7 @@ export enum SearchType {
 }
 
 function SearchSelectItem(props: SearchSelectItemProps) {
-  const { data } = props
+  const { data, onClick } = props
 
   const badgeConfig = useMemo(() => {
     const cls = ['shrink-0 badge mr-1.5']
@@ -40,8 +41,12 @@ function SearchSelectItem(props: SearchSelectItemProps) {
     }
   }, [data.type])
 
+  const handleClick = useCallback(() => {
+    onClick && onClick(data)
+  }, [data, onClick])
+
   return (
-    <li className="flex  w-full cursor-pointer items-center px-2 py-1.5 hover:bg-base-content/10">
+    <li className="flex  w-full cursor-pointer items-center px-2 py-1.5 hover:bg-base-content/10" onClick={handleClick}>
       {!!badgeConfig.name && (
         <div className={badgeConfig.classes}>{badgeConfig.name}</div>
       )}
