@@ -63,7 +63,6 @@ function AvatarCard(props: AvatarCardProps) {
       </div>
 
       {logoutModal}
-      {/* <Modal.Confirm title="确定退出登录吗？" open={openLogoutConfirm} onClose={hideLogoutConfirm} onOk={handleLogout}></Modal.Confirm> */}
     </div>
   )
 }

@@ -83,7 +83,7 @@ function Home() {
         ))}
       </div>
 
-      <Modal wrapClassName='!w-96' title="创建新项目" open={false}>
+      <Modal wrapClassName='!w-96' title="创建新项目" open={false} destroyOnClose>
         <form>
           <input
             type="text"

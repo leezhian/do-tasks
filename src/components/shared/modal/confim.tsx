@@ -1,9 +1,9 @@
 /*
  * @Author: kim
  * @Date: 2023-07-23 19:53:37
- * @Description: 对话框
+ * @Description: 对话框（destroyOnClose 处理的不算好）
  */
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef, useMemo, useState, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type { MouseEvent } from 'react'
 import {
@@ -21,14 +21,17 @@ export enum ConfirmType {
   Warning = 'warning',
 }
 
+let closeTimer: NodeJS.Timeout | null = null
 export interface ConfirmProps extends BaseModalProps {
   type?: 'confirm' | 'info' | 'success' | 'error' | 'warning'
+  destroyOnClose?: boolean
 }
 
 function Confirm(props: ConfirmProps) {
   const {
     children,
     open = false,
+    destroyOnClose = false,
     wrapClassName,
     bodyStyle,
     title,
@@ -43,28 +46,65 @@ function Confirm(props: ConfirmProps) {
     type = ConfirmType.Confirm,
   } = props
   const modalRef = useRef<HTMLDialogElement>(null)
+  const [innerOpen, setInnerOpen] = useState(open)
 
   const cancelListener = (e: MouseEvent<HTMLButtonElement> | Event) => {
     e.preventDefault()
     onClose && onClose(e)
   }
 
-  useEffect(() => {
+  const closeListener = () => {
+    if(destroyOnClose) {
+      removeListener()
+      // 为了保留动画
+      closeTimer = setTimeout(() => {
+        setInnerOpen(false)
+      }, 200)
+      return
+    }
+    setInnerOpen(false)
+  }
+
+  const addListener = () => {
     modalRef.current?.addEventListener('cancel', cancelListener)
+    modalRef.current?.addEventListener('close', closeListener)
+  }
+
+  const removeListener = () => {
+    modalRef.current?.removeEventListener('cancel', cancelListener)
+    modalRef.current?.removeEventListener('close', closeListener)
+  }
+
+  useEffect(() => {
+    addListener()
 
     return () => {
-      modalRef.current?.removeEventListener('cancel', cancelListener)
+      removeListener()
     }
   }, [])
+  
+  useLayoutEffect(() => {
+    if (!modalRef.current) return
+
+      // 同样为了保留动画
+    if (innerOpen) {
+      modalRef.current?.showModal()
+    }
+  }, [innerOpen])
 
   useEffect(() => {
     if (!modalRef.current) return
     if (open) {
-      modalRef.current?.showModal()
+      if(destroyOnClose) {
+        closeTimer && clearTimeout(closeTimer)
+        closeTimer = null
+        addListener()
+      }
+      setInnerOpen(open)
     } else {
       modalRef.current?.close()
     }
-  }, [open])
+  }, [open, destroyOnClose])
 
   const icon = useMemo(() => {
     const baseClasses = 'h-6 w-6 mr-2'
@@ -87,40 +127,44 @@ function Confirm(props: ConfirmProps) {
   }, [type])
 
   return createPortal(
-    <dialog ref={modalRef} className="modal">
-      <div className={`modal-box w-96 max-w-modal ${wrapClassName}`}>
-        <h3 className="mb-2 flex items-center text-lg font-bold">
-          {icon}
-          {title}
-        </h3>
-        <div className="ml-8" style={bodyStyle}>
-          {children}
-        </div>
-        {footer === undefined && (
-          <div className="modal-action mt-2">
-            {type === ConfirmType.Confirm && (
-              <button
-                className="btn btn-sm"
-                {...cancelButtonProps}
-                onClick={onClose}
-              >
-                {cancelText}
-              </button>
+    <>
+      { (!destroyOnClose || open || innerOpen) && (
+        <dialog ref={modalRef} className="modal">
+          <div className={`modal-box w-96 max-w-modal ${wrapClassName}`}>
+            <h3 className="mb-2 flex items-center text-lg font-bold">
+              {icon}
+              {title}
+            </h3>
+            <div className="ml-8" style={bodyStyle}>
+              {children}
+            </div>
+            {footer === undefined && (
+              <div className="modal-action mt-2">
+                {type === ConfirmType.Confirm && (
+                  <button
+                    className="btn btn-sm"
+                    {...cancelButtonProps}
+                    onClick={onClose}
+                  >
+                    {cancelText}
+                  </button>
+                )}
+                <button
+                  className="btn btn-primary btn-sm"
+                  {...okButtonProps}
+                  onClick={onOk}
+                >
+                  {confirmLoading && (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  )}
+                  {okText}
+                </button>
+              </div>
             )}
-            <button
-              className="btn btn-primary btn-sm"
-              {...okButtonProps}
-              onClick={onOk}
-            >
-              {confirmLoading && (
-                <span className="loading loading-spinner loading-xs"></span>
-              )}
-              {okText}
-            </button>
           </div>
-        )}
-      </div>
-    </dialog>,
+        </dialog>
+      )}
+    </>,
     document.body,
   )
 }

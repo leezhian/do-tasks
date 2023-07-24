@@ -23,7 +23,7 @@ export function useLogout(confirmCallback: () => void) {
   }
 
   const confirmNode = useMemo(() => {
-    return <Modal.Confirm title="确定退出登录吗？" open={logoutConfirmVisible} onClose={hide} onOk={handleConfirm}></Modal.Confirm>
+    return <Modal.Confirm title="确定退出登录吗？" open={logoutConfirmVisible} onClose={hide} onOk={handleConfirm} destroyOnClose />
   }, [logoutConfirmVisible, show, hide])
 
   return {
