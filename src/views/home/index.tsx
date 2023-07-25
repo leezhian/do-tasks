@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import ProjectCard from '@/components/home/project-card/intex'
 import Modal from '@/components/shared/modal'
+import Toast from '@/components/shared/toast/toast-wrap'
+import toast from '@/components/shared/toast'
 
 const morkProjectData = [
   {

@@ -21,6 +21,10 @@ export default {
         90: 90,
         infinity: 9999,
       },
+      // 0 6px 16px 0 rgb(0 0 0 / 0.1), 
+      boxShadow: {
+        toast: '0 0 16px -2px rgb(0 0 0 / 0.12), 0 12px 20px -5px rgb(0 0 0 / 0.1)'
+      },
       gridTemplateColumns: {
         'auto-fit-flex': 'repeat(auto-fit, minmax(256px, 1fr))',
         'auto-fit-fixed': 'repeat(auto-fit, minmax(256px, 256px))',
