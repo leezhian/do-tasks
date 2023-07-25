@@ -37,7 +37,7 @@ function AvatarCard(props: AvatarCardProps) {
   return (
     <div className={classes}>
       <div className="flex items-center">
-        <div className="avatar placeholder shrink-0">
+        <div className="daisy-avatar daisy-placeholder shrink-0">
           <div className="w-12 rounded-full bg-neutral-focus text-neutral-content">
             <span className="text-xs">靓</span>
           </div>
@@ -46,17 +46,17 @@ function AvatarCard(props: AvatarCardProps) {
       </div>
 
       <div className="mt-3 flex items-center justify-between">
-        <ThemeSwap className="btn btn-ghost btn-sm" iconClassName="h-6 w-6" />
+        <ThemeSwap className="daisy-btn daisy-btn-ghost daisy-btn-sm" iconClassName="h-6 w-6" />
 
-        <div className="indicator sm:tooltip sm:tooltip-bottom" data-tip="通知">
-          <span className="badge indicator-item badge-secondary right-3 top-1 h-2 w-2 p-0"></span>
-          <button className="btn btn-ghost btn-sm">
+        <div className="daisy-indicator sm:daisy-tooltip sm:daisy-tooltip-bottom" data-tip="通知">
+          <span className="daisy-badge daisy-indicator-item daisy-badge-secondary right-3 top-1 h-2 w-2 p-0"></span>
+          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm">
             <BellIcon className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="sm:tooltip sm:tooltip-bottom" data-tip="退出登录">
-          <button className="btn btn-ghost btn-sm" onClick={showLogoutConfirm}>
+        <div className="sm:daisy-tooltip sm:daisy-tooltip-bottom" data-tip="退出登录">
+          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm" onClick={showLogoutConfirm}>
             <ArrowRightOnRectangleIcon className="h-6 w-6" />
           </button>
         </div>

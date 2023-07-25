@@ -27,5 +27,8 @@ export default {
       }
     },
   },
+  daisyui: {
+    prefix: 'daisy-'
+  },
   plugins: [require('daisyui')],
 }

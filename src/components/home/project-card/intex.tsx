@@ -16,24 +16,27 @@ function ProjectCard(props: ProjectCardProps) {
 
   return (
     <div
-      className={`min-w-64 card w-64 cursor-pointer bg-base-100 shadow-xl ${className}`}
+      className={`min-w-64 daisy-card w-64 cursor-pointer bg-base-100 shadow-xl ${className}`}
     >
       <div className="bg-hero relative rounded-bl-unset rounded-br-unset rounded-tl-inherit rounded-tr-inherit px-4 py-2">
         {/* 卡片菜单栏 start */}
         <div className="-mr-2 mb-2 flex items-center justify-between text-xs">
           <div className="flex items-center">
-            <div className="badge badge-info h-1.5 px-0.5"></div>
+            <div className="daisy-badge daisy-badge-info h-1.5 px-0.5"></div>
             <span className="ml-1">进行中</span>
           </div>
 
           {/* 下拉菜单 start */}
-          <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-ghost btn-xs">
+          <div className="daisy-dropdown daisy-dropdown-end">
+            <label
+              tabIndex={0}
+              className="daisy-btn daisy-btn-ghost daisy-btn-xs"
+            >
               <EllipsisHorizontalIcon className="h-4 w-4" />
             </label>
             <ul
               tabIndex={0}
-              className="menu dropdown-content z-[1] w-20 rounded-lg bg-base-100 px-0 text-xs shadow"
+              className="daisy-menu daisy-dropdown-content z-[1] w-20 rounded-lg bg-base-100 px-0 text-xs shadow"
             >
               <li>
                 <a className="rounded-none px-2 py-1">归档</a>
@@ -49,13 +52,13 @@ function ProjectCard(props: ProjectCardProps) {
         </div>
         {/* 卡片菜单栏 end */}
         {/* 项目名称 */}
-        <div className="card-title block truncate text-base">
+        <div className="daisy-card-title block truncate text-base">
           {dataSource?.name}
         </div>
       </div>
 
       {/* 项目数据 start */}
-      <div className="card-body flex-row p-4">
+      <div className="daisy-card-body flex-row p-4">
         <CircleProgress className="shrink-0" percent={50} secPercent={10} />
         <div className="flex grow flex-col items-end">
           <table className="text-right text-xs">

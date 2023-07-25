@@ -82,7 +82,7 @@ function Menu() {
         }`}
       >
         <AvatarCard className="shrink-0" />
-        <div className="divider mx-4 before:h-px after:h-px"></div>
+        <div className="daisy-divider mx-4 before:h-px after:h-px"></div>
 
         {/* 搜索框 start */}
         <div className="hidden p-4 pt-0 md:block">
@@ -94,7 +94,7 @@ function Menu() {
           <div className="flex shrink-0 items-center justify-between px-4 font-semibold">
             <h3 className="text-base font-semibold">团队</h3>
             <div className="sm:tooltip sm:tooltip-bottom" data-tip="创建团队">
-              <button className="btn btn-ghost btn-xs">
+              <button className="daisy-btn daisy-btn-ghost daisy-btn-xs">
                 <PlusIcon className="h-5 w-5" />
               </button>
             </div>
@@ -112,7 +112,7 @@ function Menu() {
         <div className="sticky left-0 right-0 top-0 z-50 flex h-12 w-full justify-between bg-base-100 md:hidden">
           {/* 搜索按钮 start */}
           <button
-            className={`btn btn-ghost justify-start hover:bg-transparent ${
+            className={`daisy-btn daisy-btn-ghost justify-start hover:bg-transparent ${
               showMenu ? 'pointer-events-none invisible' : ''
             }`}
             onClick={() => toggleSearchBar(true)}
@@ -122,10 +122,10 @@ function Menu() {
           {/* 搜索按钮 end */}
 
           {/* 菜单图标 start */}
-          <label className="btn btn-circle btn-ghost swap swap-rotate justify-items-end hover:bg-transparent">
+          <label className="daisy-btn daisy-btn-circle daisy-btn-ghost daisy-swap daisy-swap-rotate justify-items-end hover:bg-transparent">
             <input type="checkbox" checked={showMenu} onChange={toggleMenu} />
-            <XMarkIcon className="swap-on h-6 w-6 fill-current" />
-            <Bars2Icon className="swap-off h-6 w-6 fill-current" />
+            <XMarkIcon className="daisy-swap-on h-6 w-6 fill-current" />
+            <Bars2Icon className="daisy-swap-off h-6 w-6 fill-current" />
           </label>
           {/* 菜单图标 end */}
         </div>

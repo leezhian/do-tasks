@@ -52,15 +52,15 @@ function Home() {
   return (
     <div ref={containerRef}>
       <div className="flex w-full items-center p-4">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="daisy-btn daisy-btn-primary" onClick={() => setShowModal(true)}>
           <PlusIcon className="h-6 w-6" />
           创建项目
         </button>
-        <div className="divider divider-horizontal before:w-px after:w-px"></div>
+        <div className="daisy-divider daisy-divider-horizontal before:w-px after:w-px"></div>
 
-        <div className="tabs">
-          <a className="tab">进行中</a>
-          <a className="tab tab-active">已归档</a>
+        <div className="daisy-tabs">
+          <a className="daisy-tab">进行中</a>
+          <a className="daisy-tab daisy-tab-active">已归档</a>
         </div>
 
         <div className="ml-auto text-right">
@@ -89,7 +89,7 @@ function Home() {
             type="text"
             placeholder="输入项目名称"
             maxLength={30}
-            className="input input-bordered input-md w-full"
+            className="daisy-input daisy-input-bordered daisy-input-md w-full"
           />
         </form>
       </Modal>

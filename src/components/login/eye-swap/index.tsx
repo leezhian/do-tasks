@@ -19,11 +19,11 @@ function EyeSwap(props: EyeSwapProps) {
   }, [])
 
   return (
-    <label className={`swap ${className}`}>
+    <label className={`daisy-swap ${className}`}>
       <input type="checkbox" checked={checked} onChange={handleChange} />
 
-      <EyeIcon className="swap-on h-6 w-6" />
-      <EyeSlashIcon className="swap-off h-6 w-6" />
+      <EyeIcon className="daisy-swap-on h-6 w-6" />
+      <EyeSlashIcon className="daisy-swap-off h-6 w-6" />
     </label>
   )
 }

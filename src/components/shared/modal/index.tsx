@@ -118,11 +118,11 @@ function Modal(props: ModalProps) {
   return createPortal(
     <>
       {(!destroyOnClose || open || innerOpen) && (
-        <dialog ref={modalRef} className="modal">
-          <div className={`modal-box w-130 max-w-modal ${wrapClassName}`}>
+        <dialog ref={modalRef} className="daisy-modal">
+          <div className={`daisy-modal-box w-130 max-w-modal ${wrapClassName}`}>
             {showCloseIcon && (
               <button
-                className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
+                className="daisy-btn daisy-btn-circle daisy-btn-ghost daisy-btn-sm absolute right-2 top-2"
                 onClick={onClose}
               >
                 ✕
@@ -131,21 +131,21 @@ function Modal(props: ModalProps) {
             <h3 className="mb-2 text-lg font-bold">{title}</h3>
             <div style={bodyStyle}>{children}</div>
             {footer === undefined && (
-              <div className="modal-action">
+              <div className="daisy-modal-action">
                 <button
-                  className="btn btn-sm"
+                  className="daisy-btn daisy-btn-sm"
                   {...cancelButtonProps}
                   onClick={onClose}
                 >
                   {cancelText}
                 </button>
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="daisy-btn daisy-btn-primary daisy-btn-sm"
                   {...okButtonProps}
                   onClick={onOk}
                 >
                   {confirmLoading && (
-                    <span className="loading loading-spinner loading-xs"></span>
+                    <span className="daisy-loading daisy-loading-spinner daisy-loading-xs"></span>
                   )}
                   {okText}
                 </button>

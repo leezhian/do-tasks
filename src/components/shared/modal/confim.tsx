@@ -54,7 +54,7 @@ function Confirm(props: ConfirmProps) {
   }
 
   const closeListener = () => {
-    if(destroyOnClose) {
+    if (destroyOnClose) {
       removeListener()
       // 为了保留动画
       closeTimer = setTimeout(() => {
@@ -82,11 +82,11 @@ function Confirm(props: ConfirmProps) {
       removeListener()
     }
   }, [])
-  
+
   useLayoutEffect(() => {
     if (!modalRef.current) return
 
-      // 同样为了保留动画
+    // 同样为了保留动画
     if (innerOpen) {
       modalRef.current?.showModal()
     }
@@ -95,7 +95,7 @@ function Confirm(props: ConfirmProps) {
   useEffect(() => {
     if (!modalRef.current) return
     if (open) {
-      if(destroyOnClose) {
+      if (destroyOnClose) {
         closeTimer && clearTimeout(closeTimer)
         closeTimer = null
         addListener()
@@ -128,9 +128,9 @@ function Confirm(props: ConfirmProps) {
 
   return createPortal(
     <>
-      { (!destroyOnClose || open || innerOpen) && (
-        <dialog ref={modalRef} className="modal">
-          <div className={`modal-box w-96 max-w-modal ${wrapClassName}`}>
+      {(!destroyOnClose || open || innerOpen) && (
+        <dialog ref={modalRef} className="daisy-modal">
+          <div className={`daisy-modal-box w-96 max-w-modal ${wrapClassName}`}>
             <h3 className="mb-2 flex items-center text-lg font-bold">
               {icon}
               {title}
@@ -139,10 +139,10 @@ function Confirm(props: ConfirmProps) {
               {children}
             </div>
             {footer === undefined && (
-              <div className="modal-action mt-2">
+              <div className="daisy-modal-action mt-2">
                 {type === ConfirmType.Confirm && (
                   <button
-                    className="btn btn-sm"
+                    className="daisy-btn daisy-btn-sm"
                     {...cancelButtonProps}
                     onClick={onClose}
                   >
@@ -150,12 +150,12 @@ function Confirm(props: ConfirmProps) {
                   </button>
                 )}
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="daisy-btn daisy-btn-primary daisy-btn-sm"
                   {...okButtonProps}
                   onClick={onOk}
                 >
                   {confirmLoading && (
-                    <span className="loading loading-spinner loading-xs"></span>
+                    <span className="daisy-loading daisy-loading-spinner daisy-loading-xs"></span>
                   )}
                   {okText}
                 </button>

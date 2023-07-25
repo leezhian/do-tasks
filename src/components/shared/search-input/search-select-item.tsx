@@ -19,16 +19,16 @@ function SearchSelectItem(props: SearchSelectItemProps) {
   const { data, onClick } = props
 
   const badgeConfig = useMemo(() => {
-    const cls = ['shrink-0 badge mr-1.5']
+    const cls = ['shrink-0 daisy-badge mr-1.5']
     let name = ''
 
     switch (data?.type) {
       case SearchType.Team:
-        cls.push('badge-primary')
+        cls.push('daisy-badge-primary')
         name = '团队'
         break
       case SearchType.Task:
-        cls.push('badge-neutral')
+        cls.push('daisy-badge-neutral')
         name = '任务'
         break
       default:
@@ -46,7 +46,10 @@ function SearchSelectItem(props: SearchSelectItemProps) {
   }, [data, onClick])
 
   return (
-    <li className="flex  w-full cursor-pointer items-center px-2 py-1.5 hover:bg-base-content/10" onClick={handleClick}>
+    <li
+      className="flex w-full cursor-pointer items-center px-2 py-1.5 hover:bg-base-content/10"
+      onClick={handleClick}
+    >
       {!!badgeConfig.name && (
         <div className={badgeConfig.classes}>{badgeConfig.name}</div>
       )}

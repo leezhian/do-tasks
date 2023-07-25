@@ -40,7 +40,7 @@ function SearchInput(props: SearchInputProps) {
 
   // 点击区域外关闭搜索下拉列表
   const searchBlur = useCallback((e: any) => {
-    if(searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
+    if (searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
       setSearchSelectVisiable(false)
     }
   }, [])
@@ -70,7 +70,13 @@ function SearchInput(props: SearchInputProps) {
 
   // 渲染搜索下拉列表项
   const renderSearchSelectItem = useCallback((item: any) => {
-    return <SearchSelectItem onClick={handleSearchItemClick} key={item.id} data={item} />
+    return (
+      <SearchSelectItem
+        onClick={handleSearchItemClick}
+        key={item.id}
+        data={item}
+      />
+    )
   }, [])
 
   // 搜索下拉列表显示隐藏
@@ -90,9 +96,8 @@ function SearchInput(props: SearchInputProps) {
         <input
           type="text"
           placeholder="搜索任务 / 团队"
-          className="input input-md w-full bg-transparent px-3 focus:outline-0"
+          className="daisy-input daisy-input-md w-full bg-transparent px-3 focus:outline-0"
           onFocus={toggleSearchSelectVisiable}
-          // onBlur={toggleSearchSelectVisiable}
           onChange={handleSearch}
         />
       </label>

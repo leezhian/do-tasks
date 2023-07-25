@@ -29,7 +29,7 @@ function List(props: ListProps) {
     if (loading)
       return (
         <div className="text-center">
-          <span className="loading loading-spinner loading-md"></span>
+          <span className="daisy-loading daisy-loading-spinner daisy-loading-md"></span>
         </div>
       )
 

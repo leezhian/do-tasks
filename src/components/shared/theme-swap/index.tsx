@@ -43,7 +43,7 @@ function ThemeSwap(props: ThemeSwapProps) {
   }, [])
 
   return (
-    <label className={`swap swap-rotate ${className}`}>
+    <label className={`daisy-swap daisy-swap-rotate ${className}`}>
       <input
         type="checkbox"
         data-toggle-theme="dark"
@@ -54,7 +54,7 @@ function ThemeSwap(props: ThemeSwapProps) {
 
       {/* sun icon */}
       <svg
-        className={`swap-off fill-current ${iconClassName}`}
+        className={`daisy-swap-off fill-current ${iconClassName}`}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
       >
@@ -63,7 +63,7 @@ function ThemeSwap(props: ThemeSwapProps) {
 
       {/* moon icon */}
       <svg
-        className={`swap-on fill-current ${iconClassName}`}
+        className={`daisy-swap-on fill-current ${iconClassName}`}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
       >
