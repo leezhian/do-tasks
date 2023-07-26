@@ -1,13 +1,22 @@
 import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ThemeSwap from '@/components/shared/theme-swap'
 import EyeSwap from '@/components/login/eye-swap'
+import toast from '@/components/shared/toast'
+
 
 function Login() {
   const [showPwd, setShowPwd] = useState(false)
+  const navigate = useNavigate()
 
   const handlePwdTypeChange = useCallback((checked: boolean) => {
     setShowPwd(checked)
   }, [])
+
+  const handleLogin = () => {
+    toast.success('登录成功')
+    navigate('/')
+  }
 
   return (
     <div className="bg-hero daisy-hero min-h-screen">
@@ -56,7 +65,7 @@ function Login() {
               </label> */}
             </div>
             <div className="daisy-form-control mt-6">
-              <button className="daisy-btn daisy-btn-primary">登录 / 注册</button>
+              <button className="daisy-btn daisy-btn-primary" onClick={handleLogin}>登录 / 注册</button>
             </div>
           </div>
         </div>

@@ -3,14 +3,14 @@
  * @Date: 2023-07-22 10:50:34
  * @Description: 搜索框
  */
-import { useMemo, useCallback, useState, useEffect, useRef } from 'react'
+import { useMemo, useCallback, useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import List from '@/components/shared/list'
 import SearchSelectItem from './search-select-item'
 import Empty from '@/components/shared/empty'
 import SearchEmpty from '@/assets/images/search-empty.svg'
 
-interface SearchInputProps {
+export interface SearchInputProps {
   className?: string
   onSearchItem?: (item: any) => void
 }
@@ -19,24 +19,19 @@ const demoList = [
   { id: 1, title: '111', type: 2 },
   { id: 2, title: '222', type: 1 },
   { id: 3, title: '333', type: 2 },
-  { id: 4, title: '444', type: 2 },
-  { id: 5, title: '555', type: 1 },
-  { id: 6, title: '666', type: 2 },
-  { id: 7, title: '777', type: 1 },
-  { id: 8, title: '888', type: 1 },
-  { id: 9, title: '999', type: 2 },
-  { id: 10, title: '101010', type: 2 },
-  { id: 11, title: '111111', type: 1 },
-  { id: 12, title: '121212', type: 2 },
-  { id: 13, title: '131313', type: 1 },
-  { id: 14, title: '141414', type: 2 },
-  { id: 15, title: '151515', type: 1 },
 ]
 
-function SearchInput(props: SearchInputProps) {
+const SearchInput = forwardRef((props: SearchInputProps, ref) => {
   const { className, onSearchItem } = props
   const searchWrapRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
   const [searchSelectVisiable, setSearchSelectVisiable] = useState(false)
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      searchRef.current?.focus()
+    }
+  }))
 
   // 点击区域外关闭搜索下拉列表
   const searchBlur = useCallback((e: any) => {
@@ -54,7 +49,7 @@ function SearchInput(props: SearchInputProps) {
   }, [searchBlur])
 
   const classes = useMemo(() => {
-    const cls = ['relative rounded-lg bg-base-200']
+    const cls = ['relative rounded-lg bg-base-100']
 
     if (className) {
       cls.push(className)
@@ -91,9 +86,10 @@ function SearchInput(props: SearchInputProps) {
 
   return (
     <div className={classes} ref={searchWrapRef}>
-      <label className="flex w-full items-center pl-3">
+      <label className="flex w-full items-center pl-3 ">
         <MagnifyingGlassIcon className="h-6 w-6" />
         <input
+          ref={searchRef}
           type="text"
           placeholder="搜索任务 / 团队"
           className="daisy-input daisy-input-md w-full bg-transparent px-3 focus:outline-0"
@@ -116,6 +112,6 @@ function SearchInput(props: SearchInputProps) {
       </div>
     </div>
   )
-}
+})
 
 export default SearchInput

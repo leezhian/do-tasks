@@ -12,9 +12,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { useResize } from '@/hooks'
 import AvatarCard from '@/components/home/avatar-card'
-import SearchInput from '@/components/shared/search-input'
+import FixedSearch from '@/components/shared/search-input/fixed-search'
 import TeamList from '@/components/home/team-list/intex'
-import Mask from '@/components/shared/mask'
 import { setBodyOverflow } from '@/utils/utils'
 
 export interface MenuProps {
@@ -23,7 +22,7 @@ export interface MenuProps {
 
 function Menu() {
   const [showMenu, setShowMenu] = useState(false) // 是否显示菜单，pc必是true
-  const [showSearchBar, setShowSearchBar] = useState(false) // 是否显示搜索框（移动端）
+  const [showSearch, setShowSearch] = useState(false) // 是否显示搜索框
   const [mobileMenuMounted, setMobileMenuMounted] = useState(false) // 是否挂载移动端
 
   useResize((e) => {
@@ -34,10 +33,6 @@ function Menu() {
     if (innerWidth >= 768) {
       if (prevMobileMenuMounted && prevShowMenu) {
         setBodyOverflow(false)
-      }
-
-      if (showSearchBar) {
-        toggleSearchBar(false)
       }
 
       if (!prevShowMenu) {
@@ -59,17 +54,16 @@ function Menu() {
 
   const handleSearchItemClick = (item: any) => {
     console.log(item)
-    toggleSearchBar(false)
+    setShowSearch(false)
+  }
+
+  const toggleSearchShow = (show: boolean) => {
+    setShowSearch(show)
   }
 
   // 切换菜单显示
   const toggleMenu = () => {
     setShowMenu(!showMenu)
-  }
-
-  // 控制搜索框显示（移动端）
-  const toggleSearchBar = (show: boolean) => {
-    setShowSearchBar(show)
   }
 
   return (
@@ -85,8 +79,17 @@ function Menu() {
         <div className="daisy-divider mx-4 before:h-px after:h-px"></div>
 
         {/* 搜索框 start */}
-        <div className="hidden p-4 pt-0 md:block">
-          <SearchInput onSearchItem={handleSearchItemClick} />
+        <div className="hidden p-4 pt-0 md:block" onClick={() => toggleSearchShow(true)}>
+          <div className="flex h-12 w-full cursor-pointer items-center rounded-lg bg-base-200 px-3">
+            <MagnifyingGlassIcon className=" h-6 w-6 shrink-0" />
+            <div className="grow pl-2 text-base-content/50">
+              搜索任务 / 团队
+            </div>
+            <div className="shrink-0 space-x-1 opacity-50">
+              <kbd className="daisy-kbd daisy-kbd-sm">⌘</kbd>
+              <kbd className="daisy-kbd daisy-kbd-sm">K</kbd>
+            </div>
+          </div>
         </div>
         {/* 搜索框 end */}
 
@@ -115,7 +118,7 @@ function Menu() {
             className={`daisy-btn daisy-btn-ghost justify-start hover:bg-transparent ${
               showMenu ? 'pointer-events-none invisible' : ''
             }`}
-            onClick={() => toggleSearchBar(true)}
+            onClick={() => toggleSearchShow(true)}
           >
             <MagnifyingGlassIcon className="h-6 w-6" />
           </button>
@@ -131,15 +134,7 @@ function Menu() {
         </div>
       )}
 
-      {mobileMenuMounted && (
-        <Mask show={showSearchBar} onClick={() => toggleSearchBar(false)}>
-          <SearchInput
-            className="absolute top-9 m-auto w-10/12"
-            onSearchItem={handleSearchItemClick}
-          />
-        </Mask>
-      )}
-      {/* 移动端navbar end */}
+      <FixedSearch show={showSearch} onSearchItem={handleSearchItemClick} onShowChange={toggleSearchShow} />
     </>
   )
 }

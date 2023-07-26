@@ -5,6 +5,7 @@
  */
 import type { ReactNode } from 'react'
 import { useBodyOverflow } from '@/hooks'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export interface MaskProps {
   show?: boolean
@@ -17,14 +18,23 @@ function Mask({ children, show = false, zIndex = 50, onClick }: MaskProps) {
   useBodyOverflow(show)
 
   return (
-    <>
+    <AnimatePresence>
       {show && (
-        <div style={{ zIndex: zIndex }}>
-          <div className="absolute inset-0 overflow-hidden bg-black/30" onClick={onClick}></div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className='fixed inset-0'
+          style={{ zIndex: zIndex }}
+        >
+          <div
+            className="absolute inset-0 overflow-hidden bg-black/30"
+            onClick={onClick}
+          ></div>
           {children}
-        </div>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   )
 }
 
