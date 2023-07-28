@@ -14,9 +14,6 @@ export const setBodyOverflow = (function() {
     } else if(overflow && count === 1) {
       document.body.classList.add('overflow-hidden')
     }
-
-    console.log(count);
-    
   }
 })()
 

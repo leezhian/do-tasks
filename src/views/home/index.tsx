@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import ProjectCard from '@/components/home/project-card/intex'
 import Modal from '@/components/shared/modal'
-import Toast from '@/components/shared/toast/toast-wrap'
-import toast from '@/components/shared/toast'
 
 const morkProjectData = [
   {
@@ -28,6 +27,7 @@ function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [cardAutoWidth, setCardAutoWidth] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const navigate = useNavigate()
 
   const handleResize = () => {
     if (!containerRef.current) return
@@ -39,7 +39,8 @@ function Home() {
   }
 
   const handleModalClose = () => {
-    setShowModal(false)
+    // setShowModal(false)
+    navigate('/project/1')
   }
 
   useEffect(() => {
@@ -54,7 +55,10 @@ function Home() {
   return (
     <div ref={containerRef}>
       <div className="flex w-full items-center p-4">
-        <button className="daisy-btn daisy-btn-primary" onClick={() => setShowModal(true)}>
+        <button
+          className="daisy-btn daisy-btn-primary"
+          onClick={() => setShowModal(true)}
+        >
           <PlusIcon className="h-6 w-6" />
           创建项目
         </button>
@@ -81,11 +85,17 @@ function Home() {
             className={cardAutoWidth ? '!w-full' : ''}
             key={item.id}
             dataSource={item}
+            onClick={handleModalClose}
           />
         ))}
       </div>
 
-      <Modal wrapClassName='!w-96' title="创建新项目" open={false} destroyOnClose>
+      <Modal
+        wrapClassName="!w-96"
+        title="创建新项目"
+        open={false}
+        destroyOnClose
+      >
         <form>
           <input
             type="text"

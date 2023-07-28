@@ -9,14 +9,16 @@ import CircleProgress from '@/components/shared/circle-progress'
 export interface ProjectCardProps {
   className?: string
   dataSource?: Record<string, any>
+  onClick?: () => void
 }
 
 function ProjectCard(props: ProjectCardProps) {
-  const { className, dataSource } = props
+  const { className, dataSource, onClick } = props
 
   return (
     <div
       className={`min-w-64 daisy-card w-64 cursor-pointer bg-base-100 shadow-xl ${className}`}
+      onClick={onClick}
     >
       <div className="bg-hero relative rounded-bl-unset rounded-br-unset rounded-tl-inherit rounded-tr-inherit px-4 py-2">
         {/* 卡片菜单栏 start */}
