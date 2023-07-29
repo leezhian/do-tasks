@@ -19,7 +19,7 @@ export interface AvatarCardProps {
 function AvatarCard(props: AvatarCardProps) {
   const { className } = props
   const navigate = useNavigate()
-  const { show: showLogoutConfirm, logoutModal } = useLogout(() => {
+  const { show: showLogoutConfirm } = useLogout(() => {
     // TODO remove token
     navigate('/login')
   })
@@ -61,8 +61,6 @@ function AvatarCard(props: AvatarCardProps) {
           </button>
         </div>
       </div>
-
-      {logoutModal}
     </div>
   )
 }

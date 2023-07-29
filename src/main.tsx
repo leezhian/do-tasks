@@ -6,7 +6,6 @@ import zhCN from 'antd/locale/zh_CN'
 import '@/assets/styles/globals.scss'
 import router from '@/routes'
 
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider locale={zhCN}>

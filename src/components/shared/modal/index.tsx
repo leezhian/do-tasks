@@ -11,11 +11,12 @@ import type {
   ButtonHTMLAttributes,
   CSSProperties,
 } from 'react'
-import Confirm from './confim'
+import confirm, { ModalFuncProps, withConfirm, withInfo, withError, withSuccess, withWarn } from './confirm'
 
-export interface BaseModalProps {
+export interface ModalProps {
   open?: boolean
   destroyOnClose?: boolean
+  showCloseIcon?: boolean
   onClose?: (e: MouseEvent<HTMLButtonElement> | Event) => void
   onOk?: (e: MouseEvent<HTMLButtonElement>) => void
   okText?: ReactNode
@@ -28,10 +29,6 @@ export interface BaseModalProps {
   okButtonProps?: ButtonHTMLAttributes<HTMLButtonElement>
   cancelButtonProps?: ButtonHTMLAttributes<HTMLButtonElement>
   footer?: ReactNode
-}
-
-export interface ModalProps extends BaseModalProps {
-  showCloseIcon?: boolean
 }
 
 let closeTimer: NodeJS.Timeout | null = null
@@ -159,6 +156,28 @@ function Modal(props: ModalProps) {
   )
 }
 
-Modal.Confirm = Confirm
+Modal.confirm = function(props: ModalFuncProps) {
+  return confirm(withConfirm(props))
+}
+
+Modal.info = function(props: ModalFuncProps) {
+  return confirm(withInfo(props))
+}
+
+Modal.success = function(props: ModalFuncProps) {
+  return confirm(withSuccess(props))
+}
+
+function confirmWarn(props: ModalFuncProps) {
+  return confirm(withWarn(props))
+}
+
+Modal.warn = confirmWarn
+Modal.warning = confirmWarn
+
+Modal.error = function(props: ModalFuncProps) {
+  return confirm(withError(props))
+}
+
 
 export default Modal
