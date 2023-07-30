@@ -43,7 +43,7 @@ function ThemeSwap(props: ThemeSwapProps) {
   }, [])
 
   return (
-    <label className={`daisy-swap daisy-swap-rotate ${className}`}>
+    <label className={`daisy-swap daisy-swap-rotate border-0 ${className}`}>
       <input
         type="checkbox"
         data-toggle-theme="dark"

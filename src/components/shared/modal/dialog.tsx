@@ -11,6 +11,7 @@ import {
   CheckCircleIcon,
 } from '@heroicons/react/24/solid'
 import Mask from '@/components/shared/mask'
+import { fadeVariants } from '@/helpers/variants'
 import { ModalFuncProps, ConfirmType } from './confirm'
 
 function Dialog(props: ModalFuncProps) {
@@ -74,9 +75,10 @@ function Dialog(props: ModalFuncProps) {
           <Mask show={open} />
           <div className="fixed inset-0 z-infinity">
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              variants={fadeVariants}
+              initial="fadeOut"
+              animate="fadeIn"
+              exit="fadeOut"
               transition={{ duration: 0.2 }}
               className={`m-auto mt-24 w-96 max-w-modal rounded-2xl bg-base-100 p-6 shadow-2xl ${wrapClassName}`}
             >

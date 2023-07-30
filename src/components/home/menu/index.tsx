@@ -5,14 +5,18 @@
  */
 import { useState, useEffect } from 'react'
 import {
-  PlusIcon,
   Bars2Icon,
   XMarkIcon,
   MagnifyingGlassIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
 import { useResize } from '@/hooks'
 import AvatarCard from '@/components/home/avatar-card'
 import FixedSearch from '@/components/shared/search-input/fixed-search'
+import { motion } from 'framer-motion'
+import { fadeVariants } from '@/helpers/variants'
+import { useBodyOverflow } from '@/hooks'
 import TeamList from '@/components/home/team-list/intex'
 import { setBodyOverflow } from '@/utils/utils'
 
@@ -22,8 +26,10 @@ export interface MenuProps {
 
 function Menu() {
   const [showMenu, setShowMenu] = useState(false) // 是否显示菜单，pc必是true
-  const [showSearch, setShowSearch] = useState(false) // 是否显示搜索框
   const [mobileMenuMounted, setMobileMenuMounted] = useState(false) // 是否挂载移动端
+  const [menuCollapsed, setMenuCollapsed] = useState(false) // 菜单是否收起
+  const [showSearch, setShowSearch] = useState(false) // 是否显示搜索框
+  useBodyOverflow(mobileMenuMounted && showMenu)
 
   useResize((e) => {
     const { innerWidth } = e.target as Window
@@ -31,9 +37,9 @@ function Menu() {
     const prevShowMenu = showMenu
 
     if (innerWidth >= 768) {
-      if (prevMobileMenuMounted && prevShowMenu) {
-        setBodyOverflow(false)
-      }
+      // if (prevMobileMenuMounted && prevShowMenu) {
+      //   setBodyOverflow(false)
+      // }
 
       if (!prevShowMenu) {
         setShowMenu(true)
@@ -42,15 +48,18 @@ function Menu() {
       if (!prevMobileMenuMounted) {
         setShowMenu(false)
       }
+
+      setMenuCollapsed(false)
     }
+
     setMobileMenuMounted(innerWidth < 768)
   })
 
   // 768以下 打开menu 禁止页面滚动
-  useEffect(() => {
-    const documentWidth = document.documentElement.offsetWidth
-    setBodyOverflow(showMenu && documentWidth < 768)
-  }, [showMenu])
+  // useEffect(() => {
+  //   const documentWidth = document.documentElement.offsetWidth
+  //   setBodyOverflow(showMenu && documentWidth < 768)
+  // }, [showMenu])
 
   const handleSearchItemClick = (item: any) => {
     console.log(item)
@@ -66,56 +75,67 @@ function Menu() {
     setShowMenu(!showMenu)
   }
 
+  const toggleMenuCollapsed = () => {
+    setMenuCollapsed((mc) => !mc)
+  }
+
   return (
     <>
-      <div className="relative hidden h-screen w-60 shrink-0 md:block"></div>
-      {/* menu start */}
       <div
-        className={`fixed left-0 top-0 z-30 h-screen w-full flex-col border-r border-base-content border-opacity-10 bg-base-100 pt-12 md:w-60 md:pt-0 ${
-          showMenu ? 'flex' : 'hidden'
+        className={`relative hidden h-screen shrink-0 transition-all md:block ${
+          menuCollapsed ? 'md:w-12' : 'md:w-60'
         }`}
+      ></div>
+      {/* menu start */}
+      <aside
+        className={`fixed left-0 top-0 z-30 h-screen w-full flex-col border-r border-base-content border-opacity-10 bg-base-100 pt-12 transition-all md:pt-0 ${
+          showMenu ? 'flex' : 'hidden'
+        } ${menuCollapsed ? 'md:w-12' : 'md:w-60'}`}
       >
-        <AvatarCard className="shrink-0" />
+        <AvatarCard className="shrink-0" collapsed={menuCollapsed} />
         <div className="daisy-divider mx-4 before:h-px after:h-px"></div>
 
-        {/* 搜索框 start */}
-        <div className="hidden p-4 pt-0 md:block" onClick={() => toggleSearchShow(true)}>
-          <div className="flex h-12 w-full cursor-pointer items-center rounded-lg bg-base-200 px-3">
-            <MagnifyingGlassIcon className=" h-6 w-6 shrink-0" />
-            <div className="grow pl-2 text-base-content/50">
-              搜索任务 / 团队
-            </div>
-            <div className="shrink-0 space-x-1 opacity-50">
-              <kbd className="daisy-kbd daisy-kbd-sm">⌘</kbd>
-              <kbd className="daisy-kbd daisy-kbd-sm">K</kbd>
-            </div>
-          </div>
-        </div>
-        {/* 搜索框 end */}
-
         <div className="flex grow flex-col overflow-hidden">
-          <div className="flex shrink-0 items-center justify-between px-4 font-semibold">
-            <h3 className="text-base font-semibold">团队</h3>
-            <div className="sm:tooltip sm:tooltip-bottom" data-tip="创建团队">
-              <button className="daisy-btn daisy-btn-ghost daisy-btn-xs">
-                <PlusIcon className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 grow overflow-y-scroll scroll-smooth p-2 pt-0">
+          <motion.div
+            variants={fadeVariants}
+            initial={false}
+            animate={menuCollapsed ? 'fadeOut' : 'fadeIn'}
+            className="flex h-full flex-col overflow-hidden"
+          >
             <TeamList />
-          </div>
+          </motion.div>
         </div>
-      </div>
+
+        {/* 展开图标 start */}
+        <div className="shrink-0 hidden md:block">
+          <label className="daisy-btn daisy-btn-ghost daisy-swap daisy-swap-rotate h-10 w-full cursor-pointer justify-start px-3 hover:bg-transparent">
+            <input
+              type="checkbox"
+              checked={menuCollapsed}
+              onChange={toggleMenuCollapsed}
+            />
+            <ChevronDoubleLeftIcon className="daisy-swap-off h-6 w-6" />
+            <ChevronDoubleRightIcon className="daisy-swap-on h-6 w-6" />
+          </label>
+        </div>
+        {/* 菜单图标 end */}
+      </aside>
       {/* menu end */}
 
       {/* 移动端navbar start */}
       {mobileMenuMounted && (
         <div className="sticky left-0 right-0 top-0 z-50 flex h-12 w-full justify-between bg-base-100 md:hidden">
+          {/* 菜单图标 start */}
+          <label className="daisy-swap-rotate daisy-btn daisy-btn-ghost daisy-swap hover:bg-transparent">
+            <input type="checkbox" checked={showMenu} onChange={toggleMenu} />
+            <XMarkIcon className="daisy-swap-on h-6 w-6 fill-current" />
+            <Bars2Icon className="daisy-swap-off h-6 w-6 fill-current" />
+          </label>
+          {/* 菜单图标 end */}
+
           {/* 搜索按钮 start */}
           <button
-            className={`daisy-btn daisy-btn-ghost justify-start hover:bg-transparent ${
+            className={`daisy-btn daisy-btn-ghost hover:bg-transparent ${
               showMenu ? 'pointer-events-none invisible' : ''
             }`}
             onClick={() => toggleSearchShow(true)}
@@ -123,18 +143,14 @@ function Menu() {
             <MagnifyingGlassIcon className="h-6 w-6" />
           </button>
           {/* 搜索按钮 end */}
-
-          {/* 菜单图标 start */}
-          <label className="daisy-btn daisy-btn-circle daisy-btn-ghost daisy-swap daisy-swap-rotate justify-items-end hover:bg-transparent">
-            <input type="checkbox" checked={showMenu} onChange={toggleMenu} />
-            <XMarkIcon className="daisy-swap-on h-6 w-6 fill-current" />
-            <Bars2Icon className="daisy-swap-off h-6 w-6 fill-current" />
-          </label>
-          {/* 菜单图标 end */}
         </div>
       )}
 
-      <FixedSearch show={showSearch} onSearchItem={handleSearchItemClick} onShowChange={toggleSearchShow} />
+      <FixedSearch
+        show={showSearch}
+        onSearchItem={handleSearchItemClick}
+        onShowChange={toggleSearchShow}
+      />
     </>
   )
 }

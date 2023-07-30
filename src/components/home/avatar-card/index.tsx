@@ -8,16 +8,21 @@ import { useNavigate } from 'react-router-dom'
 import {
   ArrowRightOnRectangleIcon,
   BellIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import { useLogout } from '@/hooks'
+import { motion } from 'framer-motion'
+import { fadeVariants } from '@/helpers/variants'
 import ThemeSwap from '@/components/shared/theme-swap'
+import Avatar from '@/components/shared/avatar'
 
 export interface AvatarCardProps {
   className?: string
+  collapsed?: boolean // 是否收起
 }
 
 function AvatarCard(props: AvatarCardProps) {
-  const { className } = props
+  const { className, collapsed = false } = props
   const navigate = useNavigate()
   const { show: showLogoutConfirm } = useLogout(() => {
     // TODO remove token
@@ -25,42 +30,104 @@ function AvatarCard(props: AvatarCardProps) {
   })
 
   const classes = useMemo(() => {
-    const classArr = ['p-4 pb-0']
+    const classArr = []
+
+    if (collapsed) {
+      classArr.push('pt-4')
+    } else {
+      classArr.push('p-4 pb-0')
+    }
 
     if (className) {
       classArr.push(className)
     }
 
     return classArr.join(' ')
-  }, [className])
+  }, [className, collapsed])
 
   return (
     <div className={classes}>
-      <div className="flex items-center">
-        <div className="daisy-avatar daisy-placeholder shrink-0">
-          <div className="w-12 rounded-full bg-neutral-focus text-neutral-content">
-            <span className="text-xs">靓</span>
-          </div>
+      <div className={`flex items-center ${collapsed ? 'justify-center' : ''}`}>
+        <div className="shrink-0">
+          <Avatar className={collapsed ? 'w-6' : ''} name="即将暴富的靓仔" />
         </div>
-        <div className="grow truncate pl-2 text-lg">即将暴富的靓仔</div>
+        {!collapsed && (
+          <div className="grow truncate pl-2 text-lg">即将暴富的靓仔</div>
+        )}
       </div>
 
-      <div className="mt-3 flex items-center justify-between">
-        <ThemeSwap className="daisy-btn daisy-btn-ghost daisy-btn-sm" iconClassName="h-6 w-6" />
+      {/* 搜索按钮 start */}
+      {collapsed && (
+        <motion.button
+          variants={fadeVariants}
+          initial="fadeOut"
+          animate="fadeIn"
+          exit="fadeOut"
+          className={`daisy-btn daisy-btn-ghost daisy-btn-sm mt-3 border-0`}
+        >
+          <MagnifyingGlassIcon className="h-6 w-6" />
+        </motion.button>
+      )}
+      {/* 搜索按钮 end */}
 
-        <div className="daisy-indicator sm:daisy-tooltip sm:daisy-tooltip-bottom" data-tip="通知">
+      <div
+        className={`mt-3 flex items-center ${
+          collapsed ? 'flex-col space-y-3' : 'justify-between'
+        }`}
+      >
+        {/* 暗黑模式 */}
+        <ThemeSwap
+          className="daisy-btn daisy-btn-ghost daisy-btn-sm"
+          iconClassName="h-6 w-6"
+        />
+
+        {/* 通知 */}
+        <div
+          className="daisy-indicator sm:daisy-tooltip sm:daisy-tooltip-bottom"
+          data-tip="通知"
+        >
           <span className="daisy-badge daisy-indicator-item daisy-badge-secondary right-3 top-1 h-2 w-2 p-0"></span>
-          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm">
+          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm border-0">
             <BellIcon className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="sm:daisy-tooltip sm:daisy-tooltip-bottom" data-tip="退出登录">
-          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm" onClick={showLogoutConfirm}>
+        {/* 退出登录 */}
+        <div
+          className="sm:daisy-tooltip sm:daisy-tooltip-bottom"
+          data-tip="退出登录"
+        >
+          <button
+            className="daisy-btn daisy-btn-ghost daisy-btn-sm border-0"
+            onClick={showLogoutConfirm}
+          >
             <ArrowRightOnRectangleIcon className="h-6 w-6" />
           </button>
         </div>
       </div>
+
+      {/* 搜索框 start */}
+      {!collapsed && (
+        <motion.div
+          variants={fadeVariants}
+          initial={false}
+          animate="fadeIn"
+          exit="fadeOut"
+          className="mt-2 hidden md:block"
+        >
+          <div className="flex h-12 w-full cursor-pointer items-center rounded-lg bg-base-200 px-3">
+            <MagnifyingGlassIcon className=" h-6 w-6 shrink-0" />
+            <div className="grow pl-2 text-base-content/50">
+              搜索任务 / 团队
+            </div>
+            <div className="shrink-0 space-x-1 opacity-50">
+              <kbd className="daisy-kbd daisy-kbd-sm">⌘</kbd>
+              <kbd className="daisy-kbd daisy-kbd-sm">K</kbd>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      {/* 搜索框 end */}
     </div>
   )
 }

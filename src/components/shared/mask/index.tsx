@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react'
 import { useBodyOverflow } from '@/hooks'
 import { motion, AnimatePresence } from 'framer-motion'
+import { fadeVariants } from '@/helpers/variants'
 
 export interface MaskProps {
   show?: boolean
@@ -18,13 +19,15 @@ function Mask({ children, show = false, zIndex = 50, onClick }: MaskProps) {
   useBodyOverflow(show)
 
   return (
-    <AnimatePresence>
+    <>
       {show && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className='fixed inset-0'
+          variants={fadeVariants}
+          initial="fadeOut"
+          animate="fadeIn"
+          exit="fadeOut"
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0"
           style={{ zIndex: zIndex }}
         >
           <div
@@ -34,7 +37,7 @@ function Mask({ children, show = false, zIndex = 50, onClick }: MaskProps) {
           {children}
         </motion.div>
       )}
-    </AnimatePresence>
+    </>
   )
 }
 

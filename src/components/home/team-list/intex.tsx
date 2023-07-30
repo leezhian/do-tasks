@@ -4,6 +4,7 @@
  * @Description: 团队列表
  */
 import { useCallback, useState } from 'react'
+import { PlusIcon } from '@heroicons/react/24/outline'
 import './index.scss'
 import List from '@/components/shared/list'
 import TeamItem from './item'
@@ -71,11 +72,24 @@ function TeamList(props: ListProps) {
   }
 
   return (
-    <List
-      className="text-sm"
-      dataSource={dataSource}
-      renderItem={renderTeamItem}
-    />
+    <>
+      <div className="flex shrink-0 items-center justify-between px-4 font-semibold">
+        <h3 className="text-base font-semibold">团队</h3>
+        <div className="sm:tooltip sm:tooltip-bottom" data-tip="创建团队">
+          <button className="daisy-btn daisy-btn-ghost daisy-btn-xs">
+            <PlusIcon className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 grow overflow-y-scroll scroll-smooth p-2 pt-0">
+        <List
+          className="text-sm"
+          dataSource={dataSource}
+          renderItem={renderTeamItem}
+        />
+      </div>
+    </>
   )
 }
 
