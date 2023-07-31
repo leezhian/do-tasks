@@ -1,9 +1,9 @@
 /*
  * @Author: kim
- * @Date: 2023-07-23 18:40:45
- * @Description: 模态框
+ * @Date: 2023-07-30 22:29:56
+ * @Description:
  */
-import { useEffect, useRef, useState, useLayoutEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type {
   ReactNode,
@@ -11,13 +11,24 @@ import type {
   ButtonHTMLAttributes,
   CSSProperties,
 } from 'react'
-import confirm, { ModalFuncProps, withConfirm, withInfo, withError, withSuccess, withWarn } from './confirm'
+import { useKeyPress } from 'ahooks'
+import { motion, AnimatePresence } from 'framer-motion'
+import { fadeVariants } from '@/helpers/variants'
+import Mask from '@/components/shared/mask'
+import confirm, {
+  ModalFuncProps,
+  withConfirm,
+  withInfo,
+  withError,
+  withSuccess,
+  withWarn,
+} from './confirm'
 
 export interface ModalProps {
   open?: boolean
   destroyOnClose?: boolean
   showCloseIcon?: boolean
-  onClose?: (e: MouseEvent<HTMLButtonElement> | Event) => void
+  onCancel?: (e: MouseEvent<HTMLButtonElement> | Event) => void
   onOk?: (e: MouseEvent<HTMLButtonElement>) => void
   okText?: ReactNode
   cancelText?: ReactNode
@@ -29,9 +40,8 @@ export interface ModalProps {
   okButtonProps?: ButtonHTMLAttributes<HTMLButtonElement>
   cancelButtonProps?: ButtonHTMLAttributes<HTMLButtonElement>
   footer?: ReactNode
+  keyboard?: boolean
 }
-
-let closeTimer: NodeJS.Timeout | null = null
 
 function Modal(props: ModalProps) {
   const {
@@ -49,122 +59,128 @@ function Modal(props: ModalProps) {
     cancelText = '取消',
     cancelButtonProps,
     onOk,
-    onClose,
+    onCancel,
+    keyboard = true,
   } = props
-  const modalRef = useRef<HTMLDialogElement>(null)
+  const [animateState, setAnimateState] = useState(open)
   const [innerOpen, setInnerOpen] = useState(open)
+  useKeyPress(['esc'], (e) => {
+    if (keyboard) {
+      onCancel && onCancel(e)
+    }
+  })
 
-  const cancelListener = (e: MouseEvent<HTMLButtonElement> | Event) => {
-    e.preventDefault()
-    onClose && onClose(e)
+  const handleModalAnimationStart = () => {
+    setAnimateState(true)
+  }
+  const handleModalAnimationComplete = () => {
+    setAnimateState(false)
+    if (destroyOnClose && !open) {
+      setInnerOpen(false)
+    }
   }
 
-  const closeListener = () => {
+  const classes = useMemo(() => {
+    const cls = [
+      'relative left-1/2 top-1/2 max-h-modal w-130 max-w-modal -translate-x-1/2 -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl bg-base-100 p-6 shadow-2xl',
+    ]
+
+    if (!animateState && !open) {
+      cls.push('hidden')
+    }
+
+    if (wrapClassName) {
+      cls.push(wrapClassName)
+    }
+
+    return cls.join(' ')
+  }, [animateState, open, wrapClassName])
+
+  useEffect(() => {
     if (destroyOnClose) {
-      removeListener()
-      // 为了保留动画
-      closeTimer = setTimeout(() => {
-        setInnerOpen(false)
-      }, 200)
-      return
-    }
-    setInnerOpen(false)
-  }
-
-  const addListener = () => {
-    modalRef.current?.addEventListener('cancel', cancelListener)
-    modalRef.current?.addEventListener('close', closeListener)
-  }
-
-  const removeListener = () => {
-    modalRef.current?.removeEventListener('cancel', cancelListener)
-    modalRef.current?.removeEventListener('close', closeListener)
-  }
-
-  useEffect(() => {
-    addListener()
-
-    return () => {
-      removeListener()
-    }
-  }, [])
-
-  useLayoutEffect(() => {
-    if (!modalRef.current) return
-
-    // 同样为了保留动画
-    if (innerOpen) {
-      modalRef.current?.showModal()
-    }
-  }, [innerOpen])
-
-  useEffect(() => {
-    if (!modalRef.current) return
-    if (open) {
-      if (destroyOnClose) {
-        closeTimer && clearTimeout(closeTimer)
-        closeTimer = null
-        addListener()
+      if (open) {
+        setInnerOpen(true)
       }
-      setInnerOpen(open)
     } else {
-      modalRef.current?.close()
+      setInnerOpen(open)
     }
-  }, [open, destroyOnClose])
+  }, [open])
 
   return createPortal(
     <>
-      {(!destroyOnClose || open || innerOpen) && (
-        <dialog ref={modalRef} className="daisy-modal">
-          <div className={`daisy-modal-box w-130 max-w-modal ${wrapClassName}`}>
-            {showCloseIcon && (
-              <button
-                className="daisy-btn daisy-btn-circle daisy-btn-ghost daisy-btn-sm absolute right-2 top-2"
-                onClick={onClose}
+      {(!destroyOnClose || innerOpen) && (
+        <div>
+          <Mask show={open} />
+          <AnimatePresence>
+            <div
+              className={`fixed inset-0 z-90 ${
+                animateState || open ? '' : 'hidden'
+              }`}
+            >
+              {/* modal 主体 start */}
+              <motion.div
+                initial="fadeOut"
+                variants={fadeVariants}
+                animate={open ? 'fadeIn' : 'fadeOut'}
+                exit="fadeOut"
+                transition={{ duration: 0.2 }}
+                className={classes}
+                onAnimationStart={handleModalAnimationStart}
+                onAnimationComplete={handleModalAnimationComplete}
               >
-                ✕
-              </button>
-            )}
-            <h3 className="mb-2 text-lg font-bold">{title}</h3>
-            <div style={bodyStyle}>{children}</div>
-            {footer === undefined && (
-              <div className="daisy-modal-action">
-                <button
-                  className="daisy-btn daisy-btn-sm"
-                  {...cancelButtonProps}
-                  onClick={onClose}
-                >
-                  {cancelText}
-                </button>
-                <button
-                  className="daisy-btn daisy-btn-primary daisy-btn-sm"
-                  {...okButtonProps}
-                  onClick={onOk}
-                >
-                  {confirmLoading && (
-                    <span className="daisy-loading daisy-loading-spinner daisy-loading-xs"></span>
-                  )}
-                  {okText}
-                </button>
-              </div>
-            )}
-          </div>
-        </dialog>
+                {showCloseIcon && (
+                  <button
+                    className="daisy-btn daisy-btn-circle daisy-btn-ghost daisy-btn-sm absolute right-2 top-2"
+                    onClick={onCancel}
+                  >
+                    ✕
+                  </button>
+                )}
+                <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                <div style={bodyStyle}>{children}</div>
+                {/* model footer start */}
+                {footer === undefined && (
+                  <div className="daisy-modal-action">
+                    <button
+                      className="daisy-btn daisy-btn-sm"
+                      {...cancelButtonProps}
+                      onClick={onCancel}
+                    >
+                      {cancelText}
+                    </button>
+                    <button
+                      className="daisy-btn daisy-btn-primary daisy-btn-sm"
+                      {...okButtonProps}
+                      onClick={onOk}
+                    >
+                      {confirmLoading && (
+                        <span className="daisy-loading daisy-loading-spinner daisy-loading-xs"></span>
+                      )}
+                      {okText}
+                    </button>
+                  </div>
+                )}
+                {/* model footer end */}
+              </motion.div>
+              {/* modal 主体 end */}
+            </div>
+          </AnimatePresence>
+        </div>
       )}
     </>,
     document.body,
   )
 }
 
-Modal.confirm = function(props: ModalFuncProps) {
+Modal.confirm = function (props: ModalFuncProps) {
   return confirm(withConfirm(props))
 }
 
-Modal.info = function(props: ModalFuncProps) {
+Modal.info = function (props: ModalFuncProps) {
   return confirm(withInfo(props))
 }
 
-Modal.success = function(props: ModalFuncProps) {
+Modal.success = function (props: ModalFuncProps) {
   return confirm(withSuccess(props))
 }
 
@@ -175,9 +191,8 @@ function confirmWarn(props: ModalFuncProps) {
 Modal.warn = confirmWarn
 Modal.warning = confirmWarn
 
-Modal.error = function(props: ModalFuncProps) {
+Modal.error = function (props: ModalFuncProps) {
   return confirm(withError(props))
 }
-
 
 export default Modal

@@ -89,6 +89,7 @@ function TaskTable() {
       dataSource={data}
       rowSelection={rowSelection}
       pagination={false}
+      rowKey={(record) => record.id}
     />
   )
 }

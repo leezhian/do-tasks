@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
+    "@tinymce/tinymce-react": "^4.3.0",
     "ahooks": "^3.7.8",
     "antd": "^5.7.3",
     "framer-motion": "^10.13.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "theme-change": "^2.5.0",
+    "tinymce": "^6.6.0",
     "zustand": "^4.3.9"
   },
   "devDependencies": {

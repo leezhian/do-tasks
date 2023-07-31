@@ -19,7 +19,7 @@ function Mask({ children, show = false, zIndex = 50, onClick }: MaskProps) {
   useBodyOverflow(show)
 
   return (
-    <>
+    <AnimatePresence>
       {show && (
         <motion.div
           variants={fadeVariants}
@@ -37,7 +37,7 @@ function Mask({ children, show = false, zIndex = 50, onClick }: MaskProps) {
           {children}
         </motion.div>
       )}
-    </>
+    </AnimatePresence>
   )
 }
 

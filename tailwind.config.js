@@ -10,6 +10,9 @@ export default {
       maxWidth: {
         modal: 'calc(100vw - 32px)'
       },
+      maxHeight: {
+        modal: 'calc(100vh - 5em)'
+      },
       borderRadius: {
         unset: 'unset',
         inherit: 'inherit',
@@ -20,8 +23,7 @@ export default {
         80: 80,
         90: 90,
         infinity: 9999,
-      },
-      // 0 6px 16px 0 rgb(0 0 0 / 0.1), 
+      }, 
       boxShadow: {
         toast: '0 0 16px -2px rgb(0 0 0 / 0.12), 0 12px 20px -5px rgb(0 0 0 / 0.1)'
       },

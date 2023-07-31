@@ -3,19 +3,27 @@
  * @Date: 2023-07-26 18:49:09
  * @Description: 项目页
  */
+import { useState } from 'react'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/project/task-table'
 import FilterSelect from '@/components/project/filter-select'
 import SortSelect from '@/components/project/sort-select'
+import TaskSettingModal from '@/components/project/task-setting-modal'
 
 function Project() {
+  const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
+
+  const handleShowTaskSettingModal = () => {
+    setShowTaskSettingModal(true)
+  }
+
   return (
     <div className="w-full">
       <NavBar
         className=" sticky left-0 right-0 top-0"
         right={
-          <button className="daisy-btn daisy-btn-primary daisy-btn-sm">
+          <button className="daisy-btn daisy-btn-primary daisy-btn-sm" onClick={handleShowTaskSettingModal}>
             新增任务
           </button>
         }
@@ -45,6 +53,8 @@ function Project() {
 
         <TaskTable />
       </section>
+
+      <TaskSettingModal open={showTaskSettingModal} title='新增任务' onCancel={() => setShowTaskSettingModal(false)} />
     </div>
   )
 }

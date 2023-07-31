@@ -3,7 +3,7 @@
  * @Date: 2023-07-22 10:22:43
  * @Description: 菜单
  */
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Bars2Icon,
   XMarkIcon,
@@ -18,7 +18,6 @@ import { motion } from 'framer-motion'
 import { fadeVariants } from '@/helpers/variants'
 import { useBodyOverflow } from '@/hooks'
 import TeamList from '@/components/home/team-list/intex'
-import { setBodyOverflow } from '@/utils/utils'
 
 export interface MenuProps {
   className?: string
@@ -37,10 +36,6 @@ function Menu() {
     const prevShowMenu = showMenu
 
     if (innerWidth >= 768) {
-      // if (prevMobileMenuMounted && prevShowMenu) {
-      //   setBodyOverflow(false)
-      // }
-
       if (!prevShowMenu) {
         setShowMenu(true)
       }
@@ -54,12 +49,6 @@ function Menu() {
 
     setMobileMenuMounted(innerWidth < 768)
   })
-
-  // 768以下 打开menu 禁止页面滚动
-  // useEffect(() => {
-  //   const documentWidth = document.documentElement.offsetWidth
-  //   setBodyOverflow(showMenu && documentWidth < 768)
-  // }, [showMenu])
 
   const handleSearchItemClick = (item: any) => {
     console.log(item)
