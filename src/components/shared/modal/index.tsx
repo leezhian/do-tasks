@@ -1,7 +1,7 @@
 /*
  * @Author: kim
  * @Date: 2023-07-30 22:29:56
- * @Description:
+ * @Description: 模态框
  */
 import { useState, useMemo, useEffect } from 'react'
 import { createPortal } from 'react-dom'
