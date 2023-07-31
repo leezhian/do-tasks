@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PlusIcon } from '@heroicons/react/24/outline'
+import {
+  PlusIcon,
+  AdjustmentsHorizontalIcon,
+  FolderIcon,
+} from '@heroicons/react/24/outline'
 import ProjectCard from '@/components/home/project-card/intex'
 import Modal from '@/components/shared/modal'
+import FloatTips from '@/components/shared/float-tips'
 
 const morkProjectData = [
   {
@@ -69,10 +74,17 @@ function Home() {
           <a className="daisy-tab daisy-tab-active">已归档</a>
         </div>
 
-        <div className="ml-auto text-right">
+        <button
+          className="daisy-btn daisy-btn-ghost ml-auto"
+          onClick={() => setShowModal(true)}
+        >
+          <AdjustmentsHorizontalIcon className="h-6 w-6" />
+        </button>
+
+        {/* <div className="ml-auto text-right">
           <div className="text-base text-base-content/60">项目数</div>
           <div className="text-2xl font-extrabold">123</div>
-        </div>
+        </div> */}
       </div>
 
       <div
@@ -89,6 +101,8 @@ function Home() {
           />
         ))}
       </div>
+
+      <FloatTips items={[{ label: '项目数', value: 123 }]} />
 
       <Modal
         wrapClassName="!w-96"

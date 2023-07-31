@@ -10,6 +10,8 @@ import TaskTable from '@/components/project/task-table'
 import FilterSelect from '@/components/project/filter-select'
 import SortSelect from '@/components/project/sort-select'
 import TaskSettingModal from '@/components/project/task-setting-modal'
+import FloatTips from '@/components/shared/float-tips'
+import MoreSettingDropdown from '@/components/project/more-setting-dropdown'
 
 function Project() {
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
@@ -23,23 +25,21 @@ function Project() {
       <NavBar
         className=" sticky left-0 right-0 top-0"
         right={
-          <button className="daisy-btn daisy-btn-primary daisy-btn-sm" onClick={handleShowTaskSettingModal}>
+          <button
+            className="daisy-btn daisy-btn-primary daisy-btn-sm"
+            onClick={handleShowTaskSettingModal}
+          >
             新增任务
           </button>
         }
       />
       <section className="p-4">
-        <h3 className=" text-xl font-semibold mb-4">
+        <h3 className="mb-4 flex-grow text-xl font-semibold">
           价值几个亿的项目，讲真的，没骗你
         </h3>
 
-        <div className="mb-4 flex items-center justify-between">
-          <div className="space-x-2">
-            <FilterSelect />
-            <SortSelect />
-          </div>
-
-          <div className="daisy-tabs-boxed daisy-tabs bg-transparent">
+        <div className="mb-4 sm:flex sm:flex-row-reverse sm:items-center sm:justify-between">
+          <div className="daisy-tabs-boxed daisy-tabs mb-3 sm:mb-0 sm:bg-transparent">
             <a className="daisy-tab px-3">
               <ListBulletIcon className="mr-1 h-4 w-4" />
               表格
@@ -49,12 +49,28 @@ function Project() {
               度量
             </a>
           </div>
+
+          <div className="space-x-2">
+            <FilterSelect />
+            <SortSelect />
+            <MoreSettingDropdown />
+          </div>
         </div>
 
         <TaskTable />
       </section>
 
-      <TaskSettingModal open={showTaskSettingModal} title='新增任务' onCancel={() => setShowTaskSettingModal(false)} />
+      <FloatTips
+        items={[
+          { label: '总任务数', value: '123' },
+          { label: '完成进度', value: '16%' },
+        ]}
+      />
+      <TaskSettingModal
+        open={showTaskSettingModal}
+        title="新增任务"
+        onCancel={() => setShowTaskSettingModal(false)}
+      />
     </div>
   )
 }

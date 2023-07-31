@@ -4,8 +4,10 @@
  * @Description: 团队列表
  */
 import { useCallback, useState } from 'react'
+import { Select, Input } from 'antd'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import './index.scss'
+import Modal from '@/components/shared/modal'
 import List from '@/components/shared/list'
 import TeamItem from './item'
 
@@ -24,31 +26,12 @@ const demoList = [
   { id: 8, name: '团队8' },
   { id: 9, name: '团队9' },
   { id: 10, name: '团队10' },
-  { id: 11, name: '团队11' },
-  { id: 12, name: '团队12' },
-  { id: 13, name: '团队13' },
-  { id: 14, name: '团队14' },
-  { id: 15, name: '团队15' },
-  { id: 16, name: '团队16' },
-  { id: 17, name: '团队17' },
-  { id: 18, name: '团队18' },
-  { id: 19, name: '团队19' },
-  { id: 20, name: '团队20' },
-  { id: 21, name: '团队21' },
-  { id: 22, name: '团队22' },
-  { id: 23, name: '团队23' },
-  { id: 24, name: '团队24' },
-  { id: 25, name: '团队25' },
-  { id: 26, name: '团队26' },
-  { id: 27, name: '团队27' },
-  { id: 28, name: '团队28' },
-  { id: 29, name: '团队29' },
-  { id: 30, name: '团队30' },
 ]
 
 function TeamList(props: ListProps) {
   const { dataSource = demoList } = props
   const [activeTeamId, setActiveTeamId] = useState<number | null>()
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false)
 
   const handleToggleTeam = useCallback(
     (teamInfo: any) => {
@@ -76,7 +59,10 @@ function TeamList(props: ListProps) {
       <div className="flex shrink-0 items-center justify-between px-4 font-semibold">
         <h3 className="text-base font-semibold">团队</h3>
         <div className="sm:tooltip sm:tooltip-bottom" data-tip="创建团队">
-          <button className="daisy-btn daisy-btn-ghost daisy-btn-xs">
+          <button
+            className="daisy-btn daisy-btn-ghost daisy-btn-xs"
+            onClick={() => setShowAddTeamModal(true)}
+          >
             <PlusIcon className="h-5 w-5" />
           </button>
         </div>
@@ -89,6 +75,26 @@ function TeamList(props: ListProps) {
           renderItem={renderTeamItem}
         />
       </div>
+
+      <Modal
+        title="添加团队"
+        open={showAddTeamModal}
+        onCancel={() => setShowAddTeamModal(false)}
+        destroyOnClose
+      >
+        <div>
+          <Input size="large" placeholder="输入团队名称" />
+          <div className="daisy-divider before:h-px after:h-px">可选</div>
+          <Select
+            className="w-full"
+            size="large"
+            placeholder="搜索添加团队人员"
+            showSearch
+            showArrow={false}
+            mode="multiple"
+          />
+        </div>
+      </Modal>
     </>
   )
 }

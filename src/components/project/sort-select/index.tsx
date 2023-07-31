@@ -40,7 +40,7 @@ function SortSelect(props: SortSelectProps) {
       <div className="flex items-center">
         <div className="mr-1 cursor-pointer" onClick={toggleSortType}>
           {sortType === 'desc' ? (
-            <BarsArrowDownIcon className=" h-4 w-4" />
+            <BarsArrowDownIcon className="h-4 w-4" />
           ) : (
             <BarsArrowUpIcon className="h-4 w-4" />
           )}
@@ -52,7 +52,7 @@ function SortSelect(props: SortSelectProps) {
         value={value}
         bordered={false}
         options={sortOptions}
-        dropdownStyle={{ minWidth: '76px' }}
+        dropdownStyle={{ minWidth: '98px' }}
         onSelect={onSelect}
       />
     </label>

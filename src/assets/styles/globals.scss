@@ -28,5 +28,9 @@ body {
     .bg-square {
       background-image: url('@/assets/images/square-dark.svg');
     }
+
+    .float-tips {
+      @apply bg-neutral;
+    }
   }
 }

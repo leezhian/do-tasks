@@ -3,8 +3,10 @@
  * @Date: 2023-07-30 17:09:52
  * @Description: 任务设置弹窗
  */
+import { useState } from 'react'
 import Modal from '@/components/shared/modal'
 import { Form, DatePicker, Input, Select, Row, Col, Space } from 'antd'
+import Editor from '@/components/project/editor'
 
 interface TaskSettingModalProps {
   title?: string
@@ -24,6 +26,11 @@ const priorityOptions = [
 
 function TaskSettingModal(props: TaskSettingModalProps) {
   const { title, open = false, onCancel } = props
+  const [taskDetail, setTaskDetail] = useState('')
+
+  const handleTaskDetailChange = (value: string) => {
+    setTaskDetail(value)
+  }
 
   return (
     <Modal
@@ -52,7 +59,10 @@ function TaskSettingModal(props: TaskSettingModalProps) {
           </Space.Compact>
         </Form.Item>
 
-        <div className="h-80 bg-black">123</div>
+        <div className="mb-6">
+          <Editor value={taskDetail} onChange={handleTaskDetailChange} />
+        </div>
+
         <Row>
           <Col xs={24} md={12}>
             <Form.Item
