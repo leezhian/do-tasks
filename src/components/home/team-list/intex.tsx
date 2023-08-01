@@ -44,7 +44,7 @@ function TeamList(props: ListProps) {
   const renderTeamItem = (item: any) => {
     return (
       <TeamItem
-        className={`tw-team-list-item ${
+        className={`dt-team-list-item ${
           activeTeamId === item.id ? 'active' : ''
         }`}
         data={item}

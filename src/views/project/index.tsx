@@ -34,7 +34,7 @@ function Project() {
         }
       />
       <section className="p-4">
-        <h3 className="mb-4 flex-grow text-xl font-semibold">
+        <h3 className="mb-4 flex-grow text-xl font-semibold truncate sm:max-w-md">
           价值几个亿的项目，讲真的，没骗你
         </h3>
 

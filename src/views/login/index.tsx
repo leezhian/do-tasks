@@ -26,7 +26,7 @@ function Login() {
       <div className="daisy-hero-content relative w-full flex-col p-6 lg:flex-row">
         <div className="bg-square absolute left-0 hidden h-[400px] w-[400px] opacity-60 lg:block"></div>
         <div className="relative flex-grow text-center lg:pl-10 lg:text-left">
-          <h1 className="text-5xl font-bold">Task Work</h1>
+          <h1 className="text-5xl font-bold">Do Tasks</h1>
           <p className="py-6 text-2xl">简单好用的任务协同工具</p>
         </div>
         <div className="daisy-card w-full max-w-sm flex-shrink-0 bg-base-100 shadow-2xl">
