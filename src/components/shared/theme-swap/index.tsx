@@ -3,9 +3,11 @@
  * @Date: 2023-07-21 18:24:08
  * @Description: 主题切换按钮
  */
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
 import type { ChangeEvent } from 'react'
+import { shallow } from 'zustand/shallow'
 import { themeChange } from 'theme-change'
+import { useGlobalStore } from '@/store/useGlobalStore'
 
 export interface ThemeSwapProps {
   className?: string
@@ -14,22 +16,10 @@ export interface ThemeSwapProps {
 
 function ThemeSwap(props: ThemeSwapProps) {
   const { className, iconClassName } = props
-  const [theme, setTheme] = useState('light')
+  const { theme, setTheme } = useGlobalStore(
+    (state) => ({ theme: state.theme, setTheme: state.setTheme }), shallow)
 
   useEffect(() => {
-    if (
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    ) {
-      // 当前系统主题为暗黑模式
-      localStorage.setItem('theme', 'dark')
-      setTheme('dark')
-    } else {
-      // 当前系统主题为明亮模式
-      localStorage.setItem('theme', 'light')
-      setTheme('light')
-    }
-
     themeChange(false)
 
     return () => {
@@ -46,7 +36,7 @@ function ThemeSwap(props: ThemeSwapProps) {
     <label className={`daisy-swap daisy-swap-rotate border-0 ${className}`}>
       <input
         type="checkbox"
-        data-toggle-theme="dark"
+        data-toggle-theme="light,dark"
         data-act-class="ACTIVECLASS"
         checked={theme === 'dark'}
         onChange={handleThemeChange}
