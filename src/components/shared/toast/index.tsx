@@ -116,8 +116,6 @@ function flushNotice() {
         if (targetIndex >=0 ) {
           toastList.splice(targetIndex, 1)
         }
-        console.log(toastList);
-        
         break
       default:
 

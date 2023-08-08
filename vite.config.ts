@@ -6,7 +6,17 @@ import { resolve } from 'path'
 export default defineConfig({
   server: {
     open: true,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    proxy: {
+      '/auth': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/user': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      }
+    }
   },
   resolve: {
     alias: {

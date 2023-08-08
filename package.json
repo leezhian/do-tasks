@@ -12,10 +12,13 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@tinymce/tinymce-react": "^4.3.0",
+    "@types/lodash": "^4.14.196",
     "ahooks": "^3.7.8",
     "antd": "^5.7.3",
+    "axios": "^1.4.0",
     "framer-motion": "^10.13.1",
     "fs-extra": "^11.1.1",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "theme-change": "^2.5.0",
