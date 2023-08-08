@@ -10,11 +10,13 @@ import {
   BellIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
+import { shallow } from 'zustand/shallow'
 import { useLogout } from '@/hooks'
 import { motion } from 'framer-motion'
 import { fadeVariants } from '@/helpers/variants'
 import ThemeSwap from '@/components/shared/theme-swap'
 import Avatar from '@/components/shared/avatar'
+import { useUserStore } from '@/store/useUserStore'
 
 export interface AvatarCardProps {
   className?: string
@@ -24,8 +26,9 @@ export interface AvatarCardProps {
 function AvatarCard(props: AvatarCardProps) {
   const { className, collapsed = false } = props
   const navigate = useNavigate()
+  const { setToken, userInfo } = useUserStore(state => ({ setToken: state.setToken, userInfo: state.userInfo }), shallow)
   const { show: showLogoutConfirm } = useLogout(() => {
-    // TODO remove token
+    setToken('')
     navigate('/login')
   })
 
@@ -49,10 +52,10 @@ function AvatarCard(props: AvatarCardProps) {
     <div className={classes}>
       <div className={`flex items-center ${collapsed ? 'justify-center' : ''}`}>
         <div className="shrink-0">
-          <Avatar className={collapsed ? 'w-6' : ''} name="即将暴富的靓仔" />
+          <Avatar className={collapsed ? 'w-6' : ''} url={userInfo?.avatar} name={userInfo?.name} />
         </div>
         {!collapsed && (
-          <div className="grow truncate pl-2 text-lg">即将暴富的靓仔</div>
+          <div className="grow truncate pl-2 text-lg">{userInfo?.name}</div>
         )}
       </div>
 

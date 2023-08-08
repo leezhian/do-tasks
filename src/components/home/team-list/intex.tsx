@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react'
 import { Select, Input } from 'antd'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import './index.scss'
+import TeamModal from '@/components/home/team-modal'
 import Modal from '@/components/shared/modal'
 import List from '@/components/shared/list'
 import TeamItem from './item'
@@ -36,10 +37,16 @@ function TeamList(props: ListProps) {
   const handleToggleTeam = useCallback(
     (teamInfo: any) => {
       if (activeTeamId === teamInfo.id) return
+      // TODO 记录到store
       setActiveTeamId(teamInfo.id)
     },
     [activeTeamId],
   )
+
+  const handleCreateTeam = () => {
+    console.log('创建团队')
+    setShowAddTeamModal(false)
+  }
 
   const renderTeamItem = (item: any) => {
     return (
@@ -76,25 +83,13 @@ function TeamList(props: ListProps) {
         />
       </div>
 
-      <Modal
+      <TeamModal
         title="添加团队"
         open={showAddTeamModal}
+        onOk={handleCreateTeam}
         onCancel={() => setShowAddTeamModal(false)}
-        destroyOnClose
-      >
-        <div>
-          <Input size="large" placeholder="输入团队名称" />
-          <div className="daisy-divider before:h-px after:h-px">可选</div>
-          <Select
-            className="w-full"
-            size="large"
-            placeholder="搜索添加团队人员"
-            showSearch
-            showArrow={false}
-            mode="multiple"
-          />
-        </div>
-      </Modal>
+        clearOnClose
+      />
     </>
   )
 }
