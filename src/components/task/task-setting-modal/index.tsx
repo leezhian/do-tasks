@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import Modal from '@/components/shared/modal'
 import { Form, DatePicker, Input, Select, Row, Col, Space } from 'antd'
-import Editor from '@/components/project/editor'
+import Editor from '@/components/task/editor'
 
 interface TaskSettingModalProps {
   title?: string

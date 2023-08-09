@@ -8,7 +8,7 @@ import CircleProgress from '@/components/shared/circle-progress'
 
 export interface ProjectCardProps {
   className?: string
-  dataSource?: Record<string, any>
+  dataSource?: any
   onClick?: () => void
 }
 

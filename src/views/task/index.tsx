@@ -6,12 +6,12 @@
 import { useState } from 'react'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import NavBar from '@/components/shared/nav-bar'
-import TaskTable from '@/components/project/task-table'
-import FilterSelect from '@/components/project/filter-select'
-import SortSelect from '@/components/project/sort-select'
-import TaskSettingModal from '@/components/project/task-setting-modal'
+import TaskTable from '@/components/task/task-table'
+import FilterSelect from '@/components/task/filter-select'
+import SortSelect from '@/components/task/sort-select'
+import TaskSettingModal from '@/components/task/task-setting-modal'
 import FloatTips from '@/components/shared/float-tips'
-import MoreSettingDropdown from '@/components/project/more-setting-dropdown'
+import MoreSettingDropdown from '@/components/task/more-setting-dropdown'
 
 function Project() {
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)

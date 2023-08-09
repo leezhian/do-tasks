@@ -1,51 +1,71 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   PlusIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline'
 import { useRequest } from 'ahooks'
 import { _get, _post } from '@/helpers/request'
-import ProjectCard from '@/components/home/project-card/intex'
+import ProjectList from '@/components/home/project-list'
 import FloatTips from '@/components/shared/float-tips'
 import ProjectModal from '@/components/home/project-modal'
 import Toast from '@/components/shared/toast'
 
-const morkProjectData = [
-  {
-    id: 1,
-    name: '价值几个亿的项目，讲真的，没骗你',
-  },
-  {
-    id: 2,
-    name: '价值几个亿的项目，讲真的，没骗你',
-  },
-  {
-    id: 3,
-    name: '价值几个亿的项目，讲真的，没骗你',
-  },
-  {
-    id: 4,
-    name: '价值几个亿的项目，讲真的，没骗你',
-  },
-]
+interface ProjectItem {
+  name: string
+  project_id: string
+  status: number
+}
 
-function fetchCreateProject(projectName: string) {
-  return _post('/project/create', {
+// 创建项目
+function fetchCreateProject(projectName: string, teamId: string) {
+  return _post<ProjectItem>('/project/create', {
     name: projectName,
+    team_id: teamId,
   })
 }
 
-function fetchProjectList(query: { status?: number, team_id: string }) {
-  return _get('/project/list', query)
+// 获取项目列表
+function fetchProjectList(query: { status?: number; team_id: string }) {
+  return _get<ProjectItem[]>('/project/list', query)
 }
+
+const statusTab = [
+  {
+    label: '进行中',
+    value: 1,
+  },
+  {
+    label: '已归档',
+    value: 2,
+  },
+]
 
 function Home() {
   const navigate = useNavigate()
+  const { teamId } = useParams()
   const containerRef = useRef<HTMLDivElement>(null)
-  const [cardAutoWidth, setCardAutoWidth] = useState(false)
+  const [cardAutoWidth, setCardAutoWidth] = useState(false) // 卡片是否自适应宽度
+  const [activeTab, setActiveTab] = useState(1)
+  const [projectList, setProjectList] = useState<ProjectItem[]>([])
   const [showProjectModal, setShowProjectModal] = useState(false)
-  const { data: projectList } = useRequest(fetchProjectList)
+  const { loading } = useRequest(
+    () =>
+      fetchProjectList({
+        status: activeTab,
+        team_id: teamId ?? '',
+      }),
+    {
+      onSuccess: (res) => {
+        setProjectList(res)
+      },
+      onError: (error) => {
+        console.log('error', error)
+        throw error
+      },
+      refreshDeps: [activeTab, teamId],
+    },
+  )
 
   const handleResize = () => {
     if (!containerRef.current) return
@@ -53,7 +73,7 @@ function Home() {
     const containerWidth = containerRef.current.offsetWidth
     // 16 是边距，256 是卡片最小宽度
     const numOfColumn = Math.floor((containerWidth - 16) / (256 + 16))
-    setCardAutoWidth(morkProjectData.length >= numOfColumn)
+    setCardAutoWidth(projectList.length >= numOfColumn)
   }
 
   useEffect(() => {
@@ -65,20 +85,48 @@ function Home() {
     }
   }, [])
 
+  // 切换 tab
+  const handleTabChange = (tabValue: number) => {
+    if (activeTab === tabValue) return
+    setActiveTab(tabValue)
+  }
+
   // 创建项目
   const handleCreateProject = async (projectName: string) => {
     try {
-      console.log(projectName)
-      const res = await fetchCreateProject(projectName)
+      const res = await fetchCreateProject(projectName, teamId ?? '')
+      if (activeTab === 1) {
+        setProjectList([res, ...projectList])
+      }
+
       setShowProjectModal(false)
     } catch (error: any) {
       Toast.error(error.message)
     }
   }
 
+  // 跳转到项目详情
+  const navToProjectDetail = (projectId: string) => {
+    navigate(`${projectId}`, {
+      relative: 'path'
+    })
+  }
+
+  // 渲染项目列表
+  const renderProjectItem = (info: ProjectItem) => {
+    return (
+      <ProjectList.Item
+        className={cardAutoWidth ? '!w-full' : ''}
+        key={info.project_id}
+        dataSource={info}
+        onClick={() => navToProjectDetail(info.project_id)}
+      />
+    )
+  }
+
   return (
-    <div ref={containerRef}>
-      <div className="flex w-full items-center p-4">
+    <div className="relative" ref={containerRef}>
+      <div className="sticky top-12 z-10 flex w-full items-center bg-base-100 p-4 md:top-0">
         <button
           className="daisy-btn daisy-btn-primary"
           onClick={() => setShowProjectModal(true)}
@@ -89,34 +137,27 @@ function Home() {
         <div className="daisy-divider daisy-divider-horizontal before:w-px after:w-px"></div>
 
         <div className="daisy-tabs">
-          <a className="daisy-tab">进行中</a>
-          <a className="daisy-tab daisy-tab-active">已归档</a>
+          {statusTab.map((item) => (
+            <a
+              key={item.value}
+              className={`daisy-tab ${
+                activeTab === item.value ? 'daisy-tab-active' : ''
+              }`}
+              onClick={() => handleTabChange(item.value)}
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
 
         <button className="daisy-btn daisy-btn-ghost ml-auto">
           <AdjustmentsHorizontalIcon className="h-6 w-6" />
         </button>
-
-        {/* <div className="ml-auto text-right">
-          <div className="text-base text-base-content/60">项目数</div>
-          <div className="text-2xl font-extrabold">123</div>
-        </div> */}
       </div>
 
-      <div
-        className={`grid auto-cols-max grid-flow-row-dense gap-4 p-4 ${
-          cardAutoWidth ? 'grid-cols-auto-fit-flex' : 'grid-cols-auto-fit-fixed'
-        }`}
-      >
-        {morkProjectData.map((item) => (
-          <ProjectCard
-            className={cardAutoWidth ? '!w-full' : ''}
-            key={item.id}
-            dataSource={item}
-          />
-        ))}
-      </div>
+      <ProjectList itemAutoWidth={cardAutoWidth} dataSource={projectList} renderItem={renderProjectItem} />
 
+      {/* 悬浮统计 */}
       <FloatTips items={[{ label: '项目数', value: 123 }]} />
 
       <ProjectModal
