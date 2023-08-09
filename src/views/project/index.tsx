@@ -6,9 +6,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { useRequest } from 'ahooks'
 import { _get, _post } from '@/helpers/request'
-import ProjectList from '@/components/home/project-list'
+import ProjectList from '@/components/project/project-list'
 import FloatTips from '@/components/shared/float-tips'
-import ProjectModal from '@/components/home/project-modal'
+import ProjectModal from '@/components/project/project-modal'
 import Toast from '@/components/shared/toast'
 
 interface ProjectItem {

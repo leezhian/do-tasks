@@ -12,12 +12,12 @@ import {
   ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
 import { useResize } from '@/hooks'
-import AvatarCard from '@/components/home/avatar-card'
+import AvatarCard from '@/components/project/avatar-card'
 import FixedSearch from '@/components/shared/search-input/fixed-search'
 import { motion } from 'framer-motion'
 import { fadeVariants } from '@/helpers/variants'
 import { useBodyOverflow } from '@/hooks'
-import TeamList from '@/components/home/team-list/intex'
+import TeamList from '@/components/project/team-list/intex'
 
 export interface MenuProps {
   className?: string
