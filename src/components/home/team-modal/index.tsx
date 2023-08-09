@@ -107,7 +107,7 @@ export default function TeamModal(props: TeamModalProps) {
       maxLength(16, '团队名称不能超过16个字符'),
     ])
 
-    if(errorMsg) {
+    if (errorMsg) {
       Toast.error(errorMsg)
       return
     }
@@ -146,6 +146,13 @@ export default function TeamModal(props: TeamModalProps) {
           options={searchOptions}
           onSearch={handleSearch}
           onSelect={handleSelectMember}
+          notFoundContent={
+            loading ? (
+              <div className="py-2 text-center">
+                <span className="daisy-loading daisy-loading-dots daisy-loading-sm"></span>
+              </div>
+            ) : null
+          }
           maxTagCount={0}
         />
         <Space className="mt-2" wrap>

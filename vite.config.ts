@@ -15,6 +15,14 @@ export default defineConfig({
       '/user': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+      },
+      '/team': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/project': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
       }
     }
   },

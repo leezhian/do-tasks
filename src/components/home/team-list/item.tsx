@@ -6,9 +6,9 @@
 import { useCallback } from 'react'
 
 export interface TeamItemProps {
-  data?: Record<string, any>
+  data?: any
   className?: string
-  onClick?: (data?: Record<string, any>) => void
+  onClick?: (data?: any) => void
 }
 
 function TeamItem(props: TeamItemProps) {
@@ -19,7 +19,7 @@ function TeamItem(props: TeamItemProps) {
   }, [onClick, data])
 
   return (
-    <li className={className} key={data?.id} onClick={handleClick}>
+    <li className={className} key={data?.team_id} onClick={handleClick}>
       {data?.name}
     </li>
   )

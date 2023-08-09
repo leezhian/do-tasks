@@ -12,7 +12,7 @@ const router = createBrowserRouter([
     element: <AuthMainLayout />,
     children: [
       {
-        index: true,
+        path: '/:teamId',
         element: <Home />,
       },
       {

@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import {
   PlusIcon,
   AdjustmentsHorizontalIcon,
-  FolderIcon,
 } from '@heroicons/react/24/outline'
+import { useRequest } from 'ahooks'
+import { _get, _post } from '@/helpers/request'
 import ProjectCard from '@/components/home/project-card/intex'
-import Modal from '@/components/shared/modal'
 import FloatTips from '@/components/shared/float-tips'
+import ProjectModal from '@/components/home/project-modal'
+import Toast from '@/components/shared/toast'
 
 const morkProjectData = [
   {
@@ -28,11 +30,22 @@ const morkProjectData = [
   },
 ]
 
+function fetchCreateProject(projectName: string) {
+  return _post('/project/create', {
+    name: projectName,
+  })
+}
+
+function fetchProjectList(query: { status?: number, team_id: string }) {
+  return _get('/project/list', query)
+}
+
 function Home() {
+  const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const [cardAutoWidth, setCardAutoWidth] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const navigate = useNavigate()
+  const [showProjectModal, setShowProjectModal] = useState(false)
+  const { data: projectList } = useRequest(fetchProjectList)
 
   const handleResize = () => {
     if (!containerRef.current) return
@@ -41,11 +54,6 @@ function Home() {
     // 16 是边距，256 是卡片最小宽度
     const numOfColumn = Math.floor((containerWidth - 16) / (256 + 16))
     setCardAutoWidth(morkProjectData.length >= numOfColumn)
-  }
-
-  const handleModalClose = () => {
-    // setShowModal(false)
-    navigate('/project/1')
   }
 
   useEffect(() => {
@@ -57,12 +65,23 @@ function Home() {
     }
   }, [])
 
+  // 创建项目
+  const handleCreateProject = async (projectName: string) => {
+    try {
+      console.log(projectName)
+      const res = await fetchCreateProject(projectName)
+      setShowProjectModal(false)
+    } catch (error: any) {
+      Toast.error(error.message)
+    }
+  }
+
   return (
     <div ref={containerRef}>
       <div className="flex w-full items-center p-4">
         <button
           className="daisy-btn daisy-btn-primary"
-          onClick={() => setShowModal(true)}
+          onClick={() => setShowProjectModal(true)}
         >
           <PlusIcon className="h-6 w-6" />
           创建项目
@@ -74,10 +93,7 @@ function Home() {
           <a className="daisy-tab daisy-tab-active">已归档</a>
         </div>
 
-        <button
-          className="daisy-btn daisy-btn-ghost ml-auto"
-          onClick={() => setShowModal(true)}
-        >
+        <button className="daisy-btn daisy-btn-ghost ml-auto">
           <AdjustmentsHorizontalIcon className="h-6 w-6" />
         </button>
 
@@ -97,28 +113,18 @@ function Home() {
             className={cardAutoWidth ? '!w-full' : ''}
             key={item.id}
             dataSource={item}
-            onClick={handleModalClose}
           />
         ))}
       </div>
 
       <FloatTips items={[{ label: '项目数', value: 123 }]} />
 
-      <Modal
-        wrapClassName="!w-96"
+      <ProjectModal
         title="创建新项目"
-        open={false}
-        destroyOnClose
-      >
-        <form>
-          <input
-            type="text"
-            placeholder="输入项目名称"
-            maxLength={30}
-            className="daisy-input daisy-input-bordered daisy-input-md w-full"
-          />
-        </form>
-      </Modal>
+        open={showProjectModal}
+        onCancel={() => setShowProjectModal(false)}
+        onOk={handleCreateProject}
+      />
     </div>
   )
 }

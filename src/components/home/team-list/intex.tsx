@@ -3,59 +3,72 @@
  * @Date: 2023-07-22 01:12:46
  * @Description: 团队列表
  */
-import { useCallback, useState } from 'react'
-import { Select, Input } from 'antd'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useRequest } from 'ahooks'
 import { PlusIcon } from '@heroicons/react/24/outline'
-import './index.scss'
 import TeamModal from '@/components/home/team-modal'
-import Modal from '@/components/shared/modal'
+import { _post, _get } from '@/helpers/request'
+import Toast from '@/components/shared/toast'
 import List from '@/components/shared/list'
 import TeamItem from './item'
+import './index.scss'
 
-export interface ListProps {
-  dataSource?: any[]
+export interface TeamItem {
+  team_id: string
+  name: string
 }
 
-const demoList = [
-  { id: 1, name: '团队1' },
-  { id: 2, name: '团队2' },
-  { id: 3, name: '团队3' },
-  { id: 4, name: '团队4' },
-  { id: 5, name: '团队5' },
-  { id: 6, name: '团队6' },
-  { id: 7, name: '团队7' },
-  { id: 8, name: '团队8' },
-  { id: 9, name: '团队9' },
-  { id: 10, name: '团队10' },
-]
+function fetchTeamList() {
+  return _get<TeamItem[]>('/team/list')
+}
 
-function TeamList(props: ListProps) {
-  const { dataSource = demoList } = props
-  const [activeTeamId, setActiveTeamId] = useState<number | null>()
+function TeamList() {
+  const navigate = useNavigate()
+  const { teamId } = useParams()
   const [showAddTeamModal, setShowAddTeamModal] = useState(false)
+  const [teamList, setTeamList] = useState<TeamItem[]>([])
+  const { runAsync: getTeamList, loading } = useRequest(fetchTeamList, { manual: true })
 
+  useEffect(() => {
+    getTeamList().then((res) => {
+      setTeamList(res)
+    })
+  }, [])
+
+  // 切换团队
   const handleToggleTeam = useCallback(
-    (teamInfo: any) => {
-      if (activeTeamId === teamInfo.id) return
-      // TODO 记录到store
-      setActiveTeamId(teamInfo.id)
+    (teamInfo: TeamItem) => {
+      if (teamId === teamInfo.team_id) return
+      navigate(`/${teamInfo.team_id}`)
     },
-    [activeTeamId],
+    [teamId],
   )
 
-  const handleCreateTeam = () => {
-    console.log('创建团队')
-    setShowAddTeamModal(false)
+  // 创建团队
+  const handleCreateTeam = async (teamName: string, teamMembers: string[]) => {
+    try {
+      const res =  await _post<TeamItem>('/team/create', {
+        name: teamName,
+        merbers: teamMembers.join(',')
+      })
+
+      setTeamList((prev) => [res, ...prev])
+      Toast.success('创建成功')
+      setShowAddTeamModal(false)
+    } catch (error: any) {
+      Toast.error(error.message)
+    }
   }
 
-  const renderTeamItem = (item: any) => {
+  const renderTeamItem = (item: TeamItem) => {
     return (
       <TeamItem
         className={`dt-team-list-item ${
-          activeTeamId === item.id ? 'active' : ''
+          teamId === item.team_id ? 'active' : ''
         }`}
         data={item}
-        key={item.id}
+        key={item.team_id}
         onClick={handleToggleTeam}
       />
     )
@@ -78,7 +91,8 @@ function TeamList(props: ListProps) {
       <div className="mt-4 grow overflow-y-scroll scroll-smooth p-2 pt-0">
         <List
           className="text-sm"
-          dataSource={dataSource}
+          loading={loading}
+          dataSource={teamList}
           renderItem={renderTeamItem}
         />
       </div>
