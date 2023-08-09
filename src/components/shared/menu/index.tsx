@@ -12,7 +12,7 @@ import {
   ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
 import { useResize } from '@/hooks'
-import AvatarCard from '@/components/project/avatar-card'
+import AvatarCard from '@/components/shared/avatar-card'
 import FixedSearch from '@/components/shared/search-input/fixed-search'
 import { motion } from 'framer-motion'
 import { fadeVariants } from '@/helpers/variants'

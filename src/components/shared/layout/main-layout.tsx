@@ -4,7 +4,7 @@
  * @Description: 主要布局
  */
 import { Outlet } from 'react-router-dom'
-import Menu from '@/components/project/menu'
+import Menu from '@/components/shared/menu'
 
 function Layout() {
   return (
