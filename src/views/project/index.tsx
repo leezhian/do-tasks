@@ -5,10 +5,12 @@ import {
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline'
 import { useRequest } from 'ahooks'
-import { _get, _post } from '@/helpers/request'
+import { _delete, _get, _patch, _post } from '@/helpers/request'
+import { ProjectStatus } from '@/helpers/enum'
 import ProjectList from '@/components/project/project-list'
 import FloatTips from '@/components/shared/float-tips'
 import ProjectModal from '@/components/project/project-modal'
+import Modal from '@/components/shared/modal'
 import Toast from '@/components/shared/toast'
 
 interface ProjectItem {
@@ -25,6 +27,18 @@ function fetchCreateProject(projectName: string, teamId: string) {
   })
 }
 
+// 删除项目
+function deleteProject(projectId: string) {
+  return _delete(`/project/${projectId}`)
+}
+
+// 修改项目状态
+function updateProjectStatus(projectId: string, status: number) {
+  return _patch(`/project/${projectId}/status`, {
+    status,
+  })
+}
+
 // 获取项目列表
 function fetchProjectList(query: { status?: number; team_id: string }) {
   return _get<ProjectItem[]>('/project/list', query)
@@ -33,11 +47,11 @@ function fetchProjectList(query: { status?: number; team_id: string }) {
 const statusTab = [
   {
     label: '进行中',
-    value: 1,
+    value: ProjectStatus.Active,
   },
   {
     label: '已归档',
-    value: 2,
+    value: ProjectStatus.Archive,
   },
 ]
 
@@ -46,7 +60,7 @@ function Home() {
   const { teamId } = useParams()
   const containerRef = useRef<HTMLDivElement>(null)
   const [cardAutoWidth, setCardAutoWidth] = useState(false) // 卡片是否自适应宽度
-  const [activeTab, setActiveTab] = useState(1)
+  const [activeTab, setActiveTab] = useState(ProjectStatus.Active)
   const [projectList, setProjectList] = useState<ProjectItem[]>([])
   const [showProjectModal, setShowProjectModal] = useState(false)
   const { loading } = useRequest(
@@ -105,10 +119,72 @@ function Home() {
     }
   }
 
+  // 移除本地项目列表
+  const removeProjectFromLocal = (projectId: string) => {
+    const newProjectList = [...projectList]
+    const targetIndex = newProjectList.findIndex(
+      (i) => i.project_id === projectId,
+    )
+    if (targetIndex >= 0) {
+      newProjectList.splice(targetIndex, 1)
+      setProjectList(newProjectList)
+    }
+  }
+
+  const projectHandler = {
+    delete: (item: ProjectItem) => {
+      Modal.warn({
+        title: '确定要删除该项目吗？',
+        content: '删除后无法恢复！',
+        onOk: async () => {
+          try {
+            await deleteProject(item.project_id)
+            removeProjectFromLocal(item.project_id)
+            Toast.success('删除成功')
+          } catch (error: any) {
+            Toast.error('删除失败')
+          }
+        },
+      })
+    },
+    archive: (item: ProjectItem) => {
+      Modal.warn({
+        title: '确定要归档该项目吗？',
+        content: '归档后项目将无法更改，但可在归档列表中恢复！',
+        onOk: async () => {
+          try {
+            await updateProjectStatus(item.project_id, ProjectStatus.Archive)
+            removeProjectFromLocal(item.project_id)
+            Toast.success('归档成功')
+          } catch (error: any) {
+            Toast.error('归档失败')
+          }
+        },
+      })
+    },
+    unarchive: async (item: ProjectItem) => {
+      try {
+        await updateProjectStatus(item.project_id, ProjectStatus.Active)
+        removeProjectFromLocal(item.project_id)
+        Toast.success('取消归档成功')
+      } catch (error) {
+        Toast.error('取消归档失败')
+      }
+    },
+  }
+
+  // 项目下拉列表处理
+  const handleProjectDropdownItem = (
+    name: 'delete' | 'archive' | 'unarchive',
+    item: ProjectItem,
+  ) => {
+    projectHandler[name] && projectHandler[name](item)
+  }
+
   // 跳转到项目详情
   const navToProjectDetail = (projectId: string) => {
     navigate(`${projectId}`, {
-      relative: 'path'
+      relative: 'path',
     })
   }
 
@@ -120,6 +196,7 @@ function Home() {
         key={info.project_id}
         dataSource={info}
         onClick={() => navToProjectDetail(info.project_id)}
+        onDropdownClick={handleProjectDropdownItem}
       />
     )
   }
@@ -155,10 +232,14 @@ function Home() {
         </button>
       </div>
 
-      <ProjectList itemAutoWidth={cardAutoWidth} dataSource={projectList} renderItem={renderProjectItem} />
+      <ProjectList
+        itemAutoWidth={cardAutoWidth}
+        dataSource={projectList}
+        renderItem={renderProjectItem}
+      />
 
       {/* 悬浮统计 */}
-      <FloatTips items={[{ label: '项目数', value: 123 }]} />
+      <FloatTips items={[{ label: '项目数', value: projectList.length }]} />
 
       <ProjectModal
         title="创建新项目"

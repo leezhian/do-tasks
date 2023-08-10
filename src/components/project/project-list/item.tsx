@@ -3,6 +3,8 @@
  * @Date: 2023-07-23 01:36:19
  * @Description:
  */
+import type { MouseEvent } from 'react'
+import { ProjectStatus } from '@/helpers/enum'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
 import CircleProgress from '@/components/shared/circle-progress'
 
@@ -10,10 +12,16 @@ export interface ProjectCardProps {
   className?: string
   dataSource?: any
   onClick?: () => void
+  onDropdownClick?: (name: 'archive' | 'unarchive' | 'delete', item: any) => void
 }
 
 function ProjectCard(props: ProjectCardProps) {
-  const { className, dataSource, onClick } = props
+  const { className, dataSource, onClick, onDropdownClick } = props
+
+  const handleDropdownClick = (e: MouseEvent<HTMLAnchorElement>, name: 'archive' | 'unarchive' | 'delete') => {
+    e.stopPropagation()
+    onDropdownClick && onDropdownClick(name, dataSource)
+  }
 
   return (
     <div
@@ -33,18 +41,19 @@ function ProjectCard(props: ProjectCardProps) {
             <label
               tabIndex={0}
               className="daisy-btn daisy-btn-ghost daisy-btn-xs"
+              onClick={(e) => e.stopPropagation()}
             >
               <EllipsisHorizontalIcon className="h-4 w-4" />
             </label>
             <ul
               tabIndex={0}
-              className="daisy-menu daisy-dropdown-content z-[1] w-20 rounded-lg bg-base-100 px-0 text-xs shadow"
+              className="daisy-menu daisy-dropdown-content z-[1] w-20 rounded-lg bg-base-100 p-1 text-xs shadow"
             >
               <li>
-                <a className="rounded-none px-2 py-1">归档</a>
+                <a className="rounded px-2 py-1.5" onClick={(e) => handleDropdownClick(e, dataSource.status === ProjectStatus.Active ? 'archive' : 'unarchive')}>{ dataSource.status === ProjectStatus.Active ? '归档' : '取消归档'}</a>
               </li>
               <li>
-                <a className="rounded-none px-2 py-1 text-error hover:text-error">
+                <a className="rounded px-2 py-1.5 text-error hover:text-error" onClick={(e) => handleDropdownClick(e, 'delete')}>
                   删除项目
                 </a>
               </li>

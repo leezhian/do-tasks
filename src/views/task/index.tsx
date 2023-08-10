@@ -4,6 +4,7 @@
  * @Description: 项目页
  */
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
@@ -14,7 +15,12 @@ import FloatTips from '@/components/shared/float-tips'
 import MoreSettingDropdown from '@/components/task/more-setting-dropdown'
 
 function Project() {
+  const navigate = useNavigate()
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
+
+  const handleBack = () => {
+    navigate(-1)
+  }
 
   const handleShowTaskSettingModal = () => {
     setShowTaskSettingModal(true)
@@ -32,6 +38,7 @@ function Project() {
             新增任务
           </button>
         }
+        onBack={handleBack}
       />
       <section className="p-4">
         <h3 className="mb-4 flex-grow text-xl font-semibold truncate sm:max-w-md">

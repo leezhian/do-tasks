@@ -9,14 +9,15 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 interface NavBarProps {
   className?: string
   right?: ReactNode
+  onBack?: () => void
 }
 
 function NavBar(props: NavBarProps) {
-  const { right, className } = props
+  const { right, className, onBack } = props
 
   return (
     <div className={`flex h-12 items-center justify-between ${className}`}>
-      <button className="daisy-btn daisy-btn-ghost px-3 hover:bg-transparent">
+      <button className="daisy-btn daisy-btn-ghost px-3 hover:bg-transparent" onClick={onBack}>
         <ChevronLeftIcon className="h-6 w-6" />
       </button>
       {!!right && <div className="pr-3">{right}</div>}

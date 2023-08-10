@@ -8,7 +8,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import List from '@/components/shared/list'
 import SearchSelectItem from './search-select-item'
 import Empty from '@/components/shared/empty'
-import SearchEmpty from '@/assets/images/search-empty.svg'
+import SearchEmpty from '@/assets/images/search-empty.png'
 
 export interface SearchInputProps {
   className?: string

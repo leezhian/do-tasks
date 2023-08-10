@@ -6,7 +6,7 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import Empty from '@/components/shared/empty'
-import ContentEmpty from '@/assets/images/content-empty.svg'
+import ContentEmpty from '@/assets/images/content-empty.png'
 import Item from './item'
 
 export interface ProjectListProps {
@@ -39,7 +39,7 @@ function ProjectList(props: ProjectListProps) {
           {content}
         </div>
       )}
-      {!dataSource.length && <div className='pt-16'><Empty image={ContentEmpty} description="暂无更多项目" /></div>}
+      {!dataSource.length && <div className='pt-16'><Empty imageStyle={{height: '160px'}} image={ContentEmpty} description="暂无更多项目" /></div>}
     </>
   )
 }

@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
-import ContentEmpty from '@/assets/images/content-empty.svg'
+import ContentEmpty from '@/assets/images/content-empty.png'
 import Empty from '@/components/shared/empty'
 
 export interface ListProps {
