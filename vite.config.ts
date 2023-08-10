@@ -23,6 +23,10 @@ export default defineConfig({
       '/project': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+      },
+      '/process-type': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
       }
     }
   },

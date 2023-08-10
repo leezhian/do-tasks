@@ -4,9 +4,12 @@
  * @Description: 任务设置弹窗
  */
 import { useState } from 'react'
-import Modal from '@/components/shared/modal'
 import { Form, DatePicker, Input, Select, Row, Col, Space } from 'antd'
+import { _get } from '@/helpers/request'
+import { TaskPriority } from '@/helpers/enum'
+import Modal from '@/components/shared/modal'
 import Editor from '@/components/task/editor'
+import ProcessTypeSelect from '@/components/task/task-setting-modal/process-type-select'
 
 interface TaskSettingModalProps {
   title?: string
@@ -17,11 +20,11 @@ interface TaskSettingModalProps {
 const { RangePicker } = DatePicker
 
 const priorityOptions = [
-  { label: 'P0', value: '0' },
-  { label: 'P1', value: '1' },
-  { label: 'P2', value: '2' },
-  { label: 'P3', value: '3' },
-  { label: 'P4', value: '4' },
+  { label: 'P0', value: TaskPriority.P0 },
+  { label: 'P1', value: TaskPriority.P1 },
+  { label: 'P2', value: TaskPriority.P2 },
+  { label: 'P3', value: TaskPriority.P3 },
+  { label: 'P4', value: TaskPriority.P4 },
 ]
 
 function TaskSettingModal(props: TaskSettingModalProps) {
@@ -53,7 +56,7 @@ function TaskSettingModal(props: TaskSettingModalProps) {
                 className="rounded-bl-lg rounded-tl-lg bg-base-300"
               />
             </Form.Item>
-            <Form.Item name="name" noStyle>
+            <Form.Item name="name" noStyle rules={[{required: true}]}>
               <Input size="large" placeholder="输入任务名称" />
             </Form.Item>
           </Space.Compact>
@@ -70,12 +73,7 @@ function TaskSettingModal(props: TaskSettingModalProps) {
               label="流程类型"
               labelCol={{ xs: 3, md: 6 }}
             >
-              <Select
-                mode="multiple"
-                showArrow={false}
-                placeholder="自定义或选择流程类型"
-                className="max-w-[200px]"
-              />
+              <ProcessTypeSelect />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>

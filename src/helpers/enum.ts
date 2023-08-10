@@ -9,3 +9,12 @@ export enum ProjectStatus {
   Active,
   Archive
 }
+
+// 任务优先级
+export enum TaskPriority {
+  P0,
+  P1,
+  P2,
+  P3,
+  P4
+}
