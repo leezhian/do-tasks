@@ -3,11 +3,11 @@
  * @Date: 2023-08-10 18:24:27
  * @Description: 流程类型选择器
  */
-import { useState, useEffect, useMemo, memo, useCallback, useRef } from 'react'
-import type { ChangeEventHandler, KeyboardEventHandler } from 'react'
+import { useState, memo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { _get, _post, _delete } from '@/helpers/request'
+import Modal from '@/components/shared/modal'
 import SearchSelect from '@/components/shared/search-select'
 import Toast from '@/components/shared/toast'
 
@@ -34,26 +34,20 @@ function createProcessType(teamId: string, name: string) {
   })
 }
 
-const options = [
-  {
-    label: '流程类型1',
-    value: 1,
-  },
-  {
-    label: '流程类型2',
-    value: 2,
-  },
-]
+function deleteProcessType(projectTypeId: number) {
+  return _delete<ProcessType>(`/process-type/${projectTypeId}`)
+}
 
 export interface ProcessTypeSelectProps {
-  value?: number
-  onSelect?: (value: number, option: ProcessTypeOption) => void
+  status?: 'error' | 'warning'
+  value?: string | number
+  onChange?: (value: any, option: ProcessTypeOption) => void
 }
 
 const ProcessTypeSelect = memo((props: ProcessTypeSelectProps) => {
-  // const { value, onSelect } = props
+  const { value, onChange, status } = props
   const { teamId } = useParams()
-  // const [searchValue, setSearchValue] = useState<string>('')
+  // const [value, setValue] = useState<any>()
   const [processTypeList, setProcessTypeList] = useState<ProcessTypeOption[]>(
     [],
   )
@@ -70,66 +64,65 @@ const ProcessTypeSelect = memo((props: ProcessTypeSelectProps) => {
     },
   })
 
-  // const handleSearch = (value: string) => {
-  //   setSearchValue(value)
-  // }
+  // 选中处理
+  const handleSelect = async (value: string | number, option: any) => {
+    try {
+      if (value !== 'custom') {
+        // setValue(value)
+        onChange && onChange(value, option)
+        return
+      }
+      const res = await createProcessType(teamId ?? '', option.label)
+      const newOption = {
+        label: res.name,
+        value: res.id,
+      }
+      setProcessTypeList((prev) => {
+        return [
+          ...prev,
+          newOption
+        ]
+      })
 
-  // 创建流程类型
-  // const handleCreateProcessType = useCallback(
-  //   async (processTypeName: string) => {
-  //     try {
-  //       const res = await createProcessType(teamId ?? '', processTypeName)
-  //       setProcessTypeList((prev) => {
-  //         return [
-  //           ...prev,
-  //           {
-  //             label: res.name,
-  //             value: res.id,
-  //           },
-  //         ]
-  //       })
-  //     } catch (error: any) {
-  //       Toast.error(error.message)
-  //     }
-  //   },
-  //   [],
-  // )
+      // setValue(res.id)
+      onChange && onChange(res.id, newOption)
+    } catch (error: any) {
+      Toast.error(error.message)
+    }
+  }
 
-  // const notFoundContent = useMemo(() => {
-  //   if (loading) {
-  //     return (
-  //       <div className="py-2 text-center">
-  //         <span className="daisy-loading daisy-loading-dots daisy-loading-sm"></span>
-  //       </div>
-  //     )
-  //   }
-
-  //   if (searchValue) {
-  //     return (
-  //       <a
-  //         className="daisy-btn daisy-btn-outline daisy-btn-sm w-full border-dashed text-center"
-  //         onClick={() => handleCreateProcessType(searchValue)}
-  //       >
-  //         <span className="truncate">创建 {searchValue}</span>
-  //       </a>
-  //     )
-  //   }
-  //   return null
-  // }, [loading, searchValue, handleCreateProcessType])
+  // 删除选项处理
+  const handleRemoveOption = (option: any) => {
+    Modal.confirm({
+      title: '确定删除该流程类型吗？',
+      onOk: async () => {
+        try {
+          await deleteProcessType(option.value)
+          if (value === option.value) {
+            // setValue(undefined)
+            onChange && onChange(undefined, {} as ProcessTypeOption)
+          }
+          setProcessTypeList((prev) => {
+            return prev.filter((item) => item.value !== option.value)
+          })
+          Toast.success('删除成功')
+        } catch (error: any) {
+          Toast.error(error.message)
+        }
+      },
+    })
+  }
 
   return (
-    <SearchSelect options={processTypeList} placeholder='自定义或选择流程类型' />
-    // <Select
-    //   showArrow={false}
-    //   placeholder="自定义或选择流程类型"
-    //   className="max-w-[200px]"
-    //   showSearch
-    //   notFoundContent={notFoundContent}
-    //   options={processTypeList}
-    //   onSearch={handleSearch}
-    //   value={value}
-    //   onSelect={onSelect}
-    // />
+    <SearchSelect
+      className="max-w-50"
+      value={value}
+      status={status}
+      options={processTypeList}
+      placeholder="自定义或选择流程类型"
+      onChange={handleSelect}
+      onRemove={handleRemoveOption}
+    />
   )
 })
 

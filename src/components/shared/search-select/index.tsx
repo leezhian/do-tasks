@@ -3,9 +3,9 @@
  * @Date: 2023-08-11 00:04:32
  * @Description: 带搜索的下拉列表(只有单选)
  */
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import type { ChangeEventHandler } from 'react'
+import type { CSSProperties, ChangeEventHandler } from 'react'
 import { theme } from 'antd'
 import SearchSelectItem from './item'
 
@@ -15,16 +15,29 @@ export interface Option {
 }
 
 export interface SearchSelectProps {
+  className?: string
   value?: number | string
   options?: Option[]
+  status?: 'error' | 'warning' // 设置校验状态
   placeholder?: string
-  onSelect?: (value: number | string, option: Option) => void
+  onSelect?: (value: number | string, option: Option) => void // 被选中时调用，参数为选中项的 value (或 key) 值
+  onChange?: (value: any, option: Option) => void // 选中 option，或 input 的 value 变化时，调用此函数
+  onRemove?: (option: Option) => void
 }
 
 const { useToken } = theme
 
 function SearchSelect(props: SearchSelectProps) {
-  const { options = [], placeholder = '', value, onSelect } = props
+  const {
+    options = [],
+    placeholder = '',
+    status,
+    value,
+    className,
+    onSelect,
+    onChange,
+    onRemove,
+  } = props
   const { token } = useToken()
   const selectWrapRef = useRef<HTMLDivElement>(null)
   const selectInputRef = useRef<HTMLInputElement>(null)
@@ -87,9 +100,10 @@ function SearchSelect(props: SearchSelectProps) {
         setSelectedOption(option)
         setInnerValue(option.value)
       }
+      onChange && onChange(option.value, option)
       onSelect && onSelect(option.value, option)
     },
-    [value, onSelect],
+    [value, onSelect, onChange],
   )
 
   // 处理键盘事件
@@ -131,6 +145,7 @@ function SearchSelect(props: SearchSelectProps) {
     [filterOptions, focusIndex, handleOptionClick, resetPrivateData],
   )
 
+  // 初始化操作 start
   useEffect(() => {
     const selectWidth = selectWrapRef.current?.offsetWidth || 120
     setSelectWidth(selectWidth)
@@ -158,6 +173,7 @@ function SearchSelect(props: SearchSelectProps) {
     const target = options.find((item) => item.value === innerValue)
     setSelectedOption(target || null)
   }, [innerValue, options])
+  // 初始化操作 end
 
   // 选项鼠标移入
   const handleOptionEnter = (optionIndex: number) => {
@@ -170,38 +186,55 @@ function SearchSelect(props: SearchSelectProps) {
     setFocusIndex(-1)
     const reg = new RegExp(value, 'ig')
     let filterResult = options.filter((item) => reg.test(item.label))
+    // 当没有的时候显示创建
     if (filterResult.length <= 0) {
-      filterResult = [{
-        label: `创建 ${value}`,
-        value: value,
-      }]
+      filterResult = [
+        {
+          label: value,
+          value: 'custom',
+        },
+      ]
     }
     setFilterOptions(filterResult)
   }
 
+  const selectWrapStyle = useMemo(() => {
+    const styles: CSSProperties = {
+      color: token.colorText
+    }
+
+    if (status === 'error') {
+      styles.borderColor = token.colorErrorBorderHover
+    } else if (status === 'warning') {
+      styles.borderColor = token.colorWarningBorderHover
+    } else {
+      styles.borderColor = token.colorBorder
+    }
+
+    return styles
+  }, [token, status])
+
   return (
     <div
-      className="relative max-w-[200px] cursor-pointer text-sm"
+      className={`relative cursor-pointer text-sm ${className ?? ''}`}
       ref={selectWrapRef}
     >
       <div
         className="relative flex h-8 w-full cursor-text rounded-md border bg-base-100 px-3"
-        style={{
-          borderColor: token.colorBorder,
-        }}
+        style={selectWrapStyle}
       >
         <span
-          className={`relative flex-1 truncate leading-[30px] ${
+          className={`relative flex-1 truncate leading-[30px] transition-all ${
             searchValue && isFocus ? 'invisible' : ''
           }`}
-          style={{ color: token.colorTextQuaternary }}
+          style={{ color: isFocus || !selectedOption?.label ? token.colorTextQuaternary : '' }}
         >
           {selectedOption?.label || innerValue || placeholder}
         </span>
         <span className="absolute bottom-0 end-3 start-3 top-0">
           <input
             ref={selectInputRef}
-            className="h-[30px] w-full border-none bg-transparent text-inherit outline-none"
+            className="h-[30px] w-full appearance-none border-none bg-transparent text-inherit outline-none"
             type="search"
             autoComplete="off"
             value={searchValue}
@@ -222,7 +255,7 @@ function SearchSelect(props: SearchSelectProps) {
                 width: `${selectWidth}px`,
                 left: `${dropdownPosition.x}px`,
                 top: `${dropdownPosition.y}px`,
-                boxShadow: token.boxShadow
+                boxShadow: token.boxShadow,
               }}
             >
               <div className="relative max-h-64 overflow-y-scroll ">
@@ -233,7 +266,9 @@ function SearchSelect(props: SearchSelectProps) {
                       item={item}
                       focus={focusIndex === index}
                       active={innerValue === item.value}
+                      showClose={item.value !== 'custom'}
                       onClick={handleOptionClick}
+                      onRemove={onRemove}
                       onMouseEnter={() => handleOptionEnter(index)}
                     />
                   ))}

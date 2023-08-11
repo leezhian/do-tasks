@@ -5,10 +5,12 @@ export default {
   theme: {
     extend: {
       width: {
+        50: '12.5rem',
         64: '16rem',
         130: '32.5rem',
       },
       maxWidth: {
+        50: '12.5rem',
         modal: 'calc(100vw - 32px)'
       },
       maxHeight: {
@@ -23,6 +25,7 @@ export default {
         70: 70,
         80: 80,
         90: 90,
+        100: 100,
         infinity: 9999,
       }, 
       boxShadow: {

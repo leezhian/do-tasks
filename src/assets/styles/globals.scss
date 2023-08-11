@@ -6,6 +6,12 @@ body {
   @apply text-sm;
 }
 
+@layer base {
+  input[type='search']::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+}
+
 @layer components {
   #root {
     @apply flex flex-col md:flex-row;

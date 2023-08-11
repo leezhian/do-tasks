@@ -6,6 +6,7 @@
 import { useRef } from 'react'
 import { Editor } from '@tinymce/tinymce-react'
 import { tinyAPIKey } from '@/helpers/config'
+import { useGlobalStore } from '@/store/useGlobalStore'
 
 export interface TaskEditorProps {
   height?: number
@@ -15,6 +16,7 @@ export interface TaskEditorProps {
 
 function TaskEditor(props: TaskEditorProps) {
   const { height = 320, value, onChange } = props
+  const theme = useGlobalStore(state => state.theme)
   const editorRef = useRef<any>(null)
 
   return (
@@ -24,6 +26,8 @@ function TaskEditor(props: TaskEditorProps) {
       onEditorChange={onChange}
       onInit={(evt, editor) => (editorRef.current = editor)}
       init={{
+        skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
+        content_css: theme === 'dark' ? 'dark' : 'default',
         height: height,
         menubar: false,
         resize: false,

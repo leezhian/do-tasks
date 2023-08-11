@@ -63,11 +63,11 @@ function SearchSelectItem(props: SearchSelectItemProps) {
       onMouseEnter={onMouseEnter}
     >
       <div className="flex-auto truncate pr-4 leading-normal">
-        {item?.label}
+        {item?.value === 'custom' ? `创建 ${item?.label}` : item?.label}
       </div>
       {showClose && (
         <button
-          className="daisy-btn daisy-btn-circle daisy-btn-xs absolute right-1 top-1/2 -translate-y-1/2"
+          className="daisy-btn-ghost inline-flex h-6 w-6 shrink-0 cursor-pointer select-none items-center justify-center rounded-full border-none text-center text-base-content"
           onClick={handleRemove}
         >
           ✕
