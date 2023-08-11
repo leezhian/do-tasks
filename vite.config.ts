@@ -24,7 +24,15 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
+      '/task': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
       '/process-type': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/common': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       }

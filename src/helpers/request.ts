@@ -16,10 +16,25 @@ export enum NETWORK_CODE {
 const http = axios.create()
 
 function createRequest(method = 'GET') {
-  return <T>(url: string, data?: Object, config?: AxiosRequestConfig<any>) => {
-    return request<T>(url, data, {
+  return <T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>) => {
+    const reqMethod = method.toUpperCase()
+    let mergeConfig: AxiosRequestConfig<D>
+
+    if(reqMethod === 'GET') {
+      mergeConfig = {
+        params: data,
+        ...config
+      }
+    } else {
+      mergeConfig = {
+        data,
+        ...config
+      }
+    }
+
+    return request<T>(url, {
       method: method.toUpperCase(),
-      ...config
+      ...mergeConfig
     })
   }
 }
@@ -28,10 +43,10 @@ function createRequest(method = 'GET') {
  * @description: 请求
  * @param {RequestInfo | URL} url 请求地址或 request 对象
  * @param {Object} data 请求参数（仅支持简单的请求方法，比如url 为 URL类型时 或 post请求传 json参数）
- * @param {RequestInit} config 请求配置对象（想要更多自定义请求建议使用这个而不是使用data）
+ * @param {RequestInit} config 请求配置对象（里面的data优先级比 便捷写法优先级高）
  * @return {Promise<Request.Response<T>>} T 是接口返回数据中 data 的类型
  */
-async function request<T = unknown>(url: string, data?: Object, config?: AxiosRequestConfig<any>): Promise<T> {
+async function request<T = unknown, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<T> {
   return new Promise(async (resolve, reject) => {
     try {
       const authToken = useUserStore.getState().token
@@ -44,17 +59,10 @@ async function request<T = unknown>(url: string, data?: Object, config?: AxiosRe
         }
       }
     
-      if (fetchConfig.method?.toUpperCase() === 'GET') {
-        fetchConfig.params = {
-          ...data,
-          ...fetchConfig.params
-        }
-      } else {
-        fetchConfig.data = {
-          ...data,
-          ...fetchConfig.data
-        }
-      }
+      // if (fetchConfig.method?.toUpperCase() === 'GET') {
+      //   fetchConfig.params = fetchConfig.data
+      //   delete fetchConfig.data
+      // }
       
       const response = await http(fetchConfig)
       

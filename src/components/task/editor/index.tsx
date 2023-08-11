@@ -3,7 +3,7 @@
  * @Date: 2023-07-31 14:01:32
  * @Description: 编辑器
  */
-import { useRef } from 'react'
+import { useRef, forwardRef, useImperativeHandle } from 'react'
 import { Editor } from '@tinymce/tinymce-react'
 import { tinyAPIKey } from '@/helpers/config'
 import { useGlobalStore } from '@/store/useGlobalStore'
@@ -14,10 +14,11 @@ export interface TaskEditorProps {
   onChange?: (value: string, editor: any) => void
 }
 
-function TaskEditor(props: TaskEditorProps) {
+const TaskEditor = forwardRef<Editor, TaskEditorProps>(function TaskEditor(props, ref) {
   const { height = 320, value, onChange } = props
   const theme = useGlobalStore(state => state.theme)
-  const editorRef = useRef<any>(null)
+  const editorRef = useRef<any>()
+  useImperativeHandle(ref, () => editorRef.current)
 
   return (
     <Editor
@@ -38,6 +39,6 @@ function TaskEditor(props: TaskEditorProps) {
       }}
     />
   )
-}
+})
 
 export default TaskEditor

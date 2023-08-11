@@ -5,7 +5,7 @@
  */
 import { useState } from 'react'
 import { Form, DatePicker, Input, Row, Col, Space } from 'antd'
-import { _get } from '@/helpers/request'
+import { _get, _post } from '@/helpers/request'
 import Modal from '@/components/shared/modal'
 import Editor from '@/components/task/editor'
 import PrioritySelect from '@/components/task/task-setting-modal/priority-select'
@@ -16,6 +16,7 @@ interface TaskSettingModalProps {
   title?: string
   open?: boolean
   onCancel?: () => void
+  onOk?: (formData: any) => void
 }
 
 const { RangePicker } = DatePicker
@@ -37,7 +38,7 @@ const formRules = {
     required: true,
     message: '请选择任务开始/结束时间'
   }],
-  person_in_charge: [{
+  owner: [{
     required: true,
     message: '请设置负责人'
   }],
@@ -48,17 +49,34 @@ const formRules = {
 }
 
 function TaskSettingModal(props: TaskSettingModalProps) {
-  const { title, open = false, onCancel } = props
-  const [taskDetail, setTaskDetail] = useState('')
+  const { title, open = false, onCancel, onOk } = props
   const [form] = Form.useForm()
+  const [loading, setLoading] = useState(false)
+  const [taskDetail, setTaskDetail] = useState('')
 
   const handleTaskDetailChange = (value: string) => {
     setTaskDetail(value)
   }
 
   const handleOk = async () => {
-    const res = await form.validateFields()
-    console.log(res);
+    if(loading) return
+    setLoading(true)
+
+    try {
+      const res = await form.validateFields()
+      onOk && await onOk(res)
+    } catch (error) {
+      
+    } finally {
+      setLoading(false)
+    }
+    // console.log(res);
+    // const content = editorRef.current.getContent()
+    // const blob = new Blob([content], { type: 'text/html' })
+    // const formData = new FormData()
+    // formData.append('file', blob, `111.html`)
+    // const res = await _post('/common/upload', formData)
+    // console.log(res);
     
   }
 
@@ -69,6 +87,7 @@ function TaskSettingModal(props: TaskSettingModalProps) {
       wrapClassName="w-[720px]"
       onOk={handleOk}
       onCancel={onCancel}
+      confirmLoading={loading}
       destroyOnClose
     >
       <Form labelCol={{ span: 3 }} labelAlign="left" form={form} requiredMark={false}>
@@ -105,7 +124,7 @@ function TaskSettingModal(props: TaskSettingModalProps) {
           </Col>
         </Row>
 
-        <Form.Item name="person_in_charge" label="负责人" rules={formRules.person_in_charge}>
+        <Form.Item name="owner" label="负责人" rules={formRules.owner}>
           <MemberSelect placeholder="选择负责人" />
         </Form.Item>
         <Form.Item name="reviewer" label="审核人" rules={formRules.reviewer}>
