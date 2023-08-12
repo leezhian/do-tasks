@@ -1,7 +1,7 @@
 /*
  * @Author: kim
  * @Date: 2023-07-26 16:53:17
- * @Description:
+ * @Description: 悬浮搜索框
  */
 import { useCallback, memo, useEffect, useRef } from 'react'
 import { useKeyPress } from 'ahooks'

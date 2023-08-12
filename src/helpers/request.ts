@@ -1,7 +1,7 @@
 /*
  * @Author: kim
  * @Date: 2023-08-08 13:54:54
- * @Description: 
+ * @Description: axios 请求封装
  */
 import axios from 'axios'
 import type { AxiosRequestConfig } from 'axios'

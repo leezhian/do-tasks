@@ -1,7 +1,7 @@
 /*
  * @Author: kim
  * @Date: 2023-08-08 16:41:04
- * @Description: 
+ * @Description: 验证器（设计主要参考 class-validator）
  */
 export type ValidationFn = (value: any) => void
 
