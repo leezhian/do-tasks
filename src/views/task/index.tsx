@@ -6,7 +6,8 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
-import { _post } from '@/helpers/request'
+import { useRequest } from 'ahooks'
+import { _post, _get } from '@/helpers/request'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
 import FilterSelect from '@/components/task/filter-select'
@@ -15,34 +16,28 @@ import TaskSettingModal from '@/components/task/task-setting-modal'
 import FloatTips from '@/components/shared/float-tips'
 import MoreSettingDropdown from '@/components/task/more-setting-dropdown'
 import Toast from '@/components/shared/toast'
-import type {FileInfo} from '@/typings/base'
+import {
+  uploadFile,
+  createTask,
+  getTaskList,
+  TaskCreatePayload,
+} from './service'
 
-interface TaskCreatePayload {
-  title: string
-  owner_ids: string
-  reviewer_ids: string
-  priority: number
-  process_type_id: number
-  start_time: number
-  end_time: number
-  content?: string
-}
-
-function uploadFile(formData: FormData) {
-  return _post<FileInfo>('/common/upload', formData)
-}
-
-function createTask(projectId: string, payload: TaskCreatePayload) {
-  return _post('/task/create', {
-    ...payload,
-    project_id: projectId
-  })
-}
-
-function Project() {
+function Tasks() {
   const navigate = useNavigate()
   const { projectId } = useParams()
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
+  const [orderBy, setOrderBy] = useState<string>()
+  const [orderMethod, setSortMethod] = useState<string>()
+  const { loading, data: taskList } = useRequest(
+    () => getTaskList(projectId as string, {
+      order_by: orderBy,
+      order_method: orderMethod,
+    }),
+    {
+      refreshDeps: [projectId, orderBy, orderMethod],
+    },
+  )
 
   const handleBack = () => {
     navigate(-1)
@@ -58,13 +53,14 @@ function Project() {
       const payload: TaskCreatePayload = {
         title: formData.title,
         owner_ids: formData.owner.join(','),
-        reviewer_ids: formData.reviewer.join(','),
+        reviewer_id: formData.reviewer,
         priority: formData.priority,
         process_type_id: formData.process_type,
         start_time: formData.datetime[0].startOf('day').unix(),
-        end_time: formData.datetime[1].startOf('day').unix()
+        end_time: formData.datetime[1].startOf('day').unix(),
       }
 
+      // 内容上传
       const { content } = formData
       if (content && content.trim() !== '') {
         const blob = new Blob([content], { type: 'text/html' })
@@ -74,7 +70,7 @@ function Project() {
         payload.content = res.url
       }
 
-      const res = await createTask(projectId?? '', payload)
+      const res = await createTask(projectId ?? '', payload)
       console.log(res)
       setShowTaskSettingModal(false)
     } catch (error: any) {
@@ -115,12 +111,16 @@ function Project() {
 
           <div className="space-x-2">
             <FilterSelect />
-            <SortSelect />
+            <SortSelect
+              value={orderBy}
+              onSelect={(value) => setOrderBy(value as string)}
+              onSortMethodChange={(value) => setSortMethod(value)}
+            />
             <MoreSettingDropdown />
           </div>
         </div>
 
-        <TaskTable />
+        <TaskTable loading={loading} dataSource={taskList} />
       </section>
 
       <FloatTips
@@ -140,4 +140,4 @@ function Project() {
   )
 }
 
-export default Project
+export default Tasks

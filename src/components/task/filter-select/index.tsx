@@ -9,7 +9,8 @@ import { Select } from 'antd'
 import type { SelectProps } from 'antd'
 
 const filterOptions: SelectProps['options'] = [
-  { value: 2, label: '已完成' },
+  { value: 4, label: '已完成' },
+  { value: 2, label: '审核中' },
   { value: 1, label: '未完成' },
 ]
 

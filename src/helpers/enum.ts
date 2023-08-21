@@ -18,3 +18,12 @@ export enum TaskPriority {
   P3,
   P4
 }
+
+// 任务状态
+export enum TaskStatus {
+  Ban,
+  Todo,
+  UnderReview,
+  ReviewFailed,
+  Done,
+}

@@ -26,7 +26,6 @@ export interface MemberSelectProps extends SelectProps {
 }
 
 function MemberSelect(props: MemberSelectProps) {
-  const { placeholder, value, onChange } = props
   const { teamId } = useParams()
   const { loading, data } = useRequest(() => fetchMembers(teamId ?? ''), {
     refreshDeps: [teamId],
@@ -41,12 +40,9 @@ function MemberSelect(props: MemberSelectProps) {
 
   return (
     <Select
-      mode="multiple"
-      value={value}
+      {...props}
       options={options}
       showArrow={false}
-      placeholder={placeholder}
-      onChange={onChange}
       notFoundContent={
         loading ? (
           <div className="py-2 text-center">

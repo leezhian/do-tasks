@@ -69,15 +69,7 @@ function TaskSettingModal(props: TaskSettingModalProps) {
       
     } finally {
       setLoading(false)
-    }
-    // console.log(res);
-    // const content = editorRef.current.getContent()
-    // const blob = new Blob([content], { type: 'text/html' })
-    // const formData = new FormData()
-    // formData.append('file', blob, `111.html`)
-    // const res = await _post('/common/upload', formData)
-    // console.log(res);
-    
+    }    
   }
 
   return (
@@ -124,11 +116,11 @@ function TaskSettingModal(props: TaskSettingModalProps) {
           </Col>
         </Row>
 
-        <Form.Item name="owner" label="负责人" rules={formRules.owner}>
-          <MemberSelect placeholder="选择负责人" />
-        </Form.Item>
         <Form.Item name="reviewer" label="审核人" rules={formRules.reviewer}>
-          <MemberSelect placeholder="选择审核人" />
+          <MemberSelect allowClear placeholder="选择审核人" />
+        </Form.Item>
+        <Form.Item name="owner" label="负责人" rules={formRules.owner}>
+          <MemberSelect mode='multiple' placeholder="选择负责人" />
         </Form.Item>
       </Form>
     </Modal>

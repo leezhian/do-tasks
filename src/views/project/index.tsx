@@ -55,7 +55,7 @@ const statusTab = [
   },
 ]
 
-function Home() {
+function Project() {
   const navigate = useNavigate()
   const { teamId } = useParams()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -251,4 +251,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Project
