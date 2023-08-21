@@ -3,7 +3,7 @@
  * @Date: 2023-07-26 18:49:09
  * @Description: 项目页
  */
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import { useRequest } from 'ahooks'
@@ -20,6 +20,7 @@ import {
   uploadFile,
   createTask,
   getTaskList,
+  getProjectDetail,
   TaskCreatePayload,
 } from './service'
 
@@ -29,11 +30,15 @@ function Tasks() {
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
   const [orderBy, setOrderBy] = useState<string>()
   const [orderMethod, setSortMethod] = useState<string>()
-  const { loading, data: taskList } = useRequest(
-    () => getTaskList(projectId as string, {
-      order_by: orderBy,
-      order_method: orderMethod,
-    }),
+  const { data: projectDetail } = useRequest(() =>
+    getProjectDetail(projectId as string),
+  )
+  const { loading: listLoading, data: taskList } = useRequest(
+    () =>
+      getTaskList(projectId as string, {
+        order_by: orderBy,
+        order_method: orderMethod,
+      }),
     {
       refreshDeps: [projectId, orderBy, orderMethod],
     },
@@ -46,6 +51,14 @@ function Tasks() {
   const handleShowTaskSettingModal = () => {
     setShowTaskSettingModal(true)
   }
+
+  // 任务完成率
+  const ppc = useMemo(() => {
+    const doneTaskCount = projectDetail?.task_summary.done_task_count ?? 0
+    const total = projectDetail?.task_summary.total ?? 0
+
+    return Math.floor((doneTaskCount / total) * 100)
+  }, [projectDetail?.task_summary.total, projectDetail?.task_summary.done_task_count])
 
   // 新增任务
   const handleCreateTask = async (formData: any) => {
@@ -94,23 +107,23 @@ function Tasks() {
       />
       <section className="p-4">
         <h3 className="mb-4 flex-grow truncate text-xl font-semibold sm:max-w-md">
-          价值几个亿的项目，讲真的，没骗你
+          {projectDetail?.name}
         </h3>
 
         <div className="mb-4 sm:flex sm:flex-row-reverse sm:items-center sm:justify-between">
           <div className="daisy-tabs-boxed daisy-tabs mb-3 sm:mb-0 sm:bg-transparent">
-            <a className="daisy-tab px-3">
+            <a className="daisy-tab px-3 daisy-tab-active">
               <ListBulletIcon className="mr-1 h-4 w-4" />
               表格
             </a>
-            <a className="daisy-tab daisy-tab-active px-3">
+            <a className="daisy-tab px-3">
               <ChartBarIcon className="mr-1 h-4 w-4" />
               度量
             </a>
           </div>
 
           <div className="space-x-2">
-            <FilterSelect />
+            {/* <FilterSelect /> */}
             <SortSelect
               value={orderBy}
               onSelect={(value) => setOrderBy(value as string)}
@@ -120,13 +133,14 @@ function Tasks() {
           </div>
         </div>
 
-        <TaskTable loading={loading} dataSource={taskList} />
+        <TaskTable loading={listLoading} dataSource={taskList} />
       </section>
 
+      {/* remark 并不会跟随筛选改变 */}
       <FloatTips
         items={[
-          { label: '总任务数', value: '123' },
-          { label: '完成进度', value: '16%' },
+          { label: '总任务数', value: projectDetail?.task_summary.total },
+          { label: '完成进度', value: `${ppc}%` },
         ]}
       />
 

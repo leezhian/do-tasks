@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 
 interface TipItem {
   label: string
-  value: string | number
+  value: string | number | undefined
 }
 
 export interface FloatTipsProps {

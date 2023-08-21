@@ -12,6 +12,23 @@ export interface TaskCreatePayload {
   content?: string
 }
 
+export interface ProjectDetail {
+  project_id: string
+  name: string
+  status: number
+  team: {
+    team_id: string
+    name: string
+    members: string
+    status: number
+    creator_id: string
+  }
+  task_summary: {
+    total: number
+    done_task_count: number
+  }
+}
+
 export interface Task {
   createdAt: string
   end_time: number
@@ -45,6 +62,10 @@ export function createTask(projectId: string, payload: TaskCreatePayload) {
     ...payload,
     project_id: projectId
   })
+}
+
+export function getProjectDetail(projectId: string) {
+  return _get<ProjectDetail>(`/project/${projectId}`)
 }
 
 export function getTaskList(projectId: string, payload?: { order_by?: string, order_method?: string } ) {

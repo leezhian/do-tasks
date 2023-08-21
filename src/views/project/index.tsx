@@ -202,8 +202,11 @@ function Project() {
   }
 
   return (
-    <div className="relative" ref={containerRef}>
-      <div className="sticky top-12 z-10 flex w-full items-center bg-base-100 p-4 md:top-0">
+    <div
+      className="relative max-h-[calc(100vh-48px)] overflow-y-scroll md:max-h-max md:overflow-y-auto"
+      ref={containerRef}
+    >
+      <div className="sticky top-0 z-10 flex w-full items-center bg-base-100 p-4">
         <button
           className="daisy-btn daisy-btn-primary"
           onClick={() => setShowProjectModal(true)}
