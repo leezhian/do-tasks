@@ -5,7 +5,9 @@
  */
 import { useMemo } from 'react'
 import type { MouseEvent } from 'react'
+import * as dayjs from 'dayjs'
 import { ProjectStatus } from '@/helpers/enum'
+import { usePercent } from '@/hooks'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
 import CircleProgress from '@/components/shared/circle-progress'
 
@@ -21,6 +23,7 @@ export interface ProjectCardProps {
 
 function ProjectCard(props: ProjectCardProps) {
   const { className, dataSource, onClick, onDropdownClick } = props
+  const ppc = usePercent(dataSource?._count.done_task_count ?? 0, dataSource?._count.total ?? 0)
 
   const projectStatus = useMemo(() => {
     switch (dataSource.status) {
@@ -121,27 +124,27 @@ function ProjectCard(props: ProjectCardProps) {
 
       {/* 项目数据 start */}
       <div className="daisy-card-body flex-row p-4">
-        <CircleProgress className="shrink-0" percent={50} secPercent={10} />
+        <CircleProgress className="shrink-0" percent={ppc} />
         <div className="flex grow flex-col items-end">
           <table className="text-right text-xs">
             <tbody>
               <tr className="text-accent-content">
                 <td className="font-medium">任务总数：</td>
-                <td>1000</td>
+                <td>{dataSource?._count.total}</td>
               </tr>
               <tr className="text-success">
                 <td className="font-medium">准时完成：</td>
-                <td>800</td>
+                <td>{dataSource?._count.done_task_count}</td>
               </tr>
-              <tr className="text-error">
+              {/* <tr className="text-error">
                 <td className="font-medium">逾期完成：</td>
                 <td>10</td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
 
           <div className="mt-auto text-xs text-base-content/40">
-            创建于2023-07-21
+            创建于{dayjs(dataSource?.create_time).format('YYYY-MM-DD')}
           </div>
         </div>
       </div>

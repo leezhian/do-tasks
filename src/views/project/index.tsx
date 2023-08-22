@@ -101,8 +101,9 @@ function Project() {
     }
   }
 
-  const projectHandler = {
-    delete: (item: ProjectItem) => {
+  // 项目下拉列表操作
+  const projectDropdownActions: Record<string, (item: ProjectItem) => void> = {
+    delete: (item) => {
       Modal.confirm({
         title: '确定要删除该项目吗？',
         content: '删除后无法恢复！',
@@ -117,7 +118,7 @@ function Project() {
         },
       })
     },
-    archive: (item: ProjectItem) => {
+    archive: (item) => {
       Modal.confirm({
         title: '确定要归档该项目吗？',
         content: '归档后项目将无法更改，但可在归档列表中恢复！',
@@ -132,7 +133,7 @@ function Project() {
         },
       })
     },
-    unarchive: async (item: ProjectItem) => {
+    unarchive: async (item) => {
       try {
         await updateProjectStatus(item.project_id, ProjectStatus.Active)
         removeProjectFromLocal(item.project_id)
@@ -145,10 +146,10 @@ function Project() {
 
   // 项目下拉列表处理
   const handleProjectDropdownItem = (
-    name: 'delete' | 'archive' | 'unarchive',
+    name: string,
     item: ProjectItem,
   ) => {
-    projectHandler[name] && projectHandler[name](item)
+    projectDropdownActions[name] && projectDropdownActions[name](item)
   }
 
   // 跳转到项目详情

@@ -14,10 +14,11 @@ import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
 // import FilterSelect from '@/components/task/filter-select'
 import SortSelect from '@/components/task/sort-select'
-import TaskSettingModal from '@/components/task/task-setting-modal'
 import FloatTips from '@/components/shared/float-tips'
 import NavRightBtnGroup from '@/components/task/nav-right-btn-group'
 import Modal from '@/components/shared/modal'
+import TaskSettingModal from '@/components/task/task-setting-modal'
+import TaskDetailDrawer from '@/components/task/task-detail-drawer'
 import ProjectModal, {
   ProjectModalRef,
 } from '@/components/project/project-modal'
@@ -39,10 +40,12 @@ function Tasks() {
   const projectModalRef = useRef<ProjectModalRef>(null)
   const [orderBy, setOrderBy] = useState<string>() // 排序字段
   const [orderMethod, setSortMethod] = useState<string>() // 排序方式
+  const [showTaskDetailDrawer, setShowTaskDetailDrawer] = useState(false)
+  const [currentTaskDetail, setCurrentTaskDetail] = useState<any>(null)
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
   const [showProjectSettingModal, setShowProjectSettingModal] = useState(false)
   const [projectDetail, setProjectDetail] = useState<ProjectDetail>()
-  const {} = useRequest(() => getProjectDetail(projectId as string), {
+  useRequest(() => getProjectDetail(projectId as string), {
     onSuccess: (res) => {
       setProjectDetail(res)
     },
@@ -71,7 +74,7 @@ function Tasks() {
 
   // 显示任务配置弹窗
   const handleShowTaskSettingModal = () => {
-    if(projectDetail?.status !== ProjectStatus.Active) {
+    if (projectDetail?.status !== ProjectStatus.Active) {
       Toast.warning('该项目已归档，无法添加任务')
       return
     }
@@ -134,11 +137,11 @@ function Tasks() {
       await updateProject(projectId as string, {
         name: projectName,
       })
-      setProjectDetail((pd) => ({ ...pd, name: projectName } as ProjectDetail))
+      setProjectDetail((pd) => ({ ...pd, name: projectName }) as ProjectDetail)
       setShowProjectSettingModal(false)
       Toast.success('修改成功')
     } catch (error: any) {
-      Toast.error(error.message) 
+      Toast.error(error.message)
     }
   }
 
@@ -182,6 +185,11 @@ function Tasks() {
     }
   }
 
+  const showDetailDrawer = useCallback((detail: any) => {
+    setCurrentTaskDetail(detail)
+    setShowTaskDetailDrawer(true)
+  }, [])
+
   return (
     <div className="w-full">
       <NavBar
@@ -222,7 +230,11 @@ function Tasks() {
           </div>
         </div>
 
-        <TaskTable loading={listLoading} dataSource={taskList} />
+        <TaskTable
+          loading={listLoading}
+          dataSource={taskList}
+          onTitleClick={showDetailDrawer}
+        />
       </section>
 
       {/* remark 并不会跟随筛选改变 */}
@@ -233,6 +245,7 @@ function Tasks() {
         ]}
       />
 
+      {/* 任务配置弹窗 */}
       <TaskSettingModal
         open={showTaskSettingModal}
         title="新增任务"
@@ -240,6 +253,7 @@ function Tasks() {
         onCancel={() => setShowTaskSettingModal(false)}
       />
 
+      {/* 项目修改弹窗 */}
       <ProjectModal
         ref={projectModalRef}
         title="修改项目"
@@ -247,6 +261,13 @@ function Tasks() {
         open={showProjectSettingModal}
         onCancel={() => setShowProjectSettingModal(false)}
         onOk={handleUpdateProject}
+      />
+
+      {/* 任务详情弹窗 */}
+      <TaskDetailDrawer
+        open={showTaskDetailDrawer}
+        onClose={() => setShowTaskDetailDrawer(false)}
+        dataSource={currentTaskDetail}
       />
     </div>
   )
