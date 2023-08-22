@@ -1,5 +1,5 @@
-import { _get, _post } from '@/helpers/request'
-import type {FileInfo} from '@/typings/base'
+import { _get, _patch, _post } from '@/helpers/request'
+import type { FileInfo } from '@/typings/base'
 
 export interface TaskCreatePayload {
   title: string
@@ -53,10 +53,31 @@ export interface Task {
   }
 }
 
+/**
+ * @description: 上传文件
+ * @param {FormData} formData
+ * @return {*}
+ */
 export function uploadFile(formData: FormData) {
   return _post<FileInfo>('/common/upload', formData)
 }
 
+/**
+ * @description: 修改项目
+ * @param {string} projectId
+ * @param {object} payload
+ * @return {project}
+ */
+export function updateProject(projectId: string, payload?: { name?: string }) {
+  return _patch(`/project/${projectId}`, payload)
+}
+
+/**
+ * @description: 创建任务
+ * @param {string} projectId
+ * @param {TaskCreatePayload} payload
+ * @return {promise}
+ */
 export function createTask(projectId: string, payload: TaskCreatePayload) {
   return _post('/task/create', {
     ...payload,
@@ -64,11 +85,22 @@ export function createTask(projectId: string, payload: TaskCreatePayload) {
   })
 }
 
+/**
+ * @description: 获取项目详情
+ * @param {string} projectId
+ * @return {promise<ProjectDetail>}
+ */
 export function getProjectDetail(projectId: string) {
   return _get<ProjectDetail>(`/project/${projectId}`)
 }
 
-export function getTaskList(projectId: string, payload?: { order_by?: string, order_method?: string } ) {
-  if(!projectId) return Promise.resolve([])
+/**
+ * @description: 获取任务列表
+ * @param {string} projectId
+ * @param {object} payload
+ * @return {promise<Task[]>}
+ */
+export function getTaskList(projectId: string, payload?: { order_by?: string, order_method?: string }) {
+  if (!projectId) return Promise.resolve([])
   return _get<Task[]>('/task/list', { project_id: projectId, ...payload })
 }

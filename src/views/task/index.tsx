@@ -3,35 +3,55 @@
  * @Date: 2023-07-26 18:49:09
  * @Description: 项目页
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import { useRequest } from 'ahooks'
 import { _post, _get } from '@/helpers/request'
+import { usePercent } from '@/hooks'
+import { ProjectStatus } from '@/helpers/enum'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
-import FilterSelect from '@/components/task/filter-select'
+// import FilterSelect from '@/components/task/filter-select'
 import SortSelect from '@/components/task/sort-select'
 import TaskSettingModal from '@/components/task/task-setting-modal'
 import FloatTips from '@/components/shared/float-tips'
-import MoreSettingDropdown from '@/components/task/more-setting-dropdown'
+import NavRightBtnGroup from '@/components/task/nav-right-btn-group'
+import Modal from '@/components/shared/modal'
+import ProjectModal, {
+  ProjectModalRef,
+} from '@/components/project/project-modal'
 import Toast from '@/components/shared/toast'
+import { updateProjectStatus } from '@/views/project/service'
 import {
   uploadFile,
   createTask,
   getTaskList,
   getProjectDetail,
+  updateProject,
   TaskCreatePayload,
+  ProjectDetail,
 } from './service'
 
 function Tasks() {
   const navigate = useNavigate()
   const { projectId } = useParams()
+  const projectModalRef = useRef<ProjectModalRef>(null)
+  const [orderBy, setOrderBy] = useState<string>() // 排序字段
+  const [orderMethod, setSortMethod] = useState<string>() // 排序方式
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
-  const [orderBy, setOrderBy] = useState<string>()
-  const [orderMethod, setSortMethod] = useState<string>()
-  const { data: projectDetail } = useRequest(() =>
-    getProjectDetail(projectId as string),
+  const [showProjectSettingModal, setShowProjectSettingModal] = useState(false)
+  const [projectDetail, setProjectDetail] = useState<ProjectDetail>()
+  const {} = useRequest(() => getProjectDetail(projectId as string), {
+    onSuccess: (res) => {
+      setProjectDetail(res)
+    },
+    refreshDeps: [projectId],
+  })
+  // 任务完成率
+  const ppc = usePercent(
+    projectDetail?.task_summary.done_task_count ?? 0,
+    projectDetail?.task_summary.total ?? 0,
   )
   const { loading: listLoading, data: taskList } = useRequest(
     () =>
@@ -44,21 +64,92 @@ function Tasks() {
     },
   )
 
+  // 返回上一页
   const handleBack = () => {
     navigate(-1)
   }
 
+  // 显示任务配置弹窗
   const handleShowTaskSettingModal = () => {
+    if(projectDetail?.status !== ProjectStatus.Active) {
+      Toast.warning('该项目已归档，无法添加任务')
+      return
+    }
     setShowTaskSettingModal(true)
   }
 
-  // 任务完成率
-  const ppc = useMemo(() => {
-    const doneTaskCount = projectDetail?.task_summary.done_task_count ?? 0
-    const total = projectDetail?.task_summary.total ?? 0
+  // 右侧按钮组逻辑处理
+  const rightBtnGroupActions = useMemo<
+    Record<string, (projectId: string) => void>
+  >(() => {
+    return {
+      update: (projectId: string) => {
+        projectModalRef.current?.setFieldsValue({
+          projectName: projectDetail?.name,
+        })
+        setShowProjectSettingModal(true)
+      },
+      archive: async (projectId: string) => {
+        Modal.confirm({
+          title: '确定要归档该项目吗？',
+          content: '归档后项目将无法更改，但可在归档列表中恢复！',
+          onOk: async () => {
+            try {
+              await updateProjectStatus(projectId, ProjectStatus.Archive)
+              setProjectDetail(
+                (pd) =>
+                  ({
+                    ...pd,
+                    status: ProjectStatus.Archive,
+                  }) as ProjectDetail,
+              )
+              Toast.success('归档成功')
+            } catch (error: any) {
+              Toast.error('归档失败')
+            }
+          },
+        })
+      },
+      unarchive: async (projectId: string) => {
+        try {
+          await updateProjectStatus(projectId, ProjectStatus.Active)
+          setProjectDetail(
+            (pd) =>
+              ({
+                ...pd,
+                status: ProjectStatus.Active,
+              }) as ProjectDetail,
+          )
+          Toast.success('取消归档成功')
+        } catch (error) {
+          Toast.error('取消归档失败')
+        }
+      },
+    }
+  }, [projectDetail?.name])
 
-    return Math.floor((doneTaskCount / total) * 100)
-  }, [projectDetail?.task_summary.total, projectDetail?.task_summary.done_task_count])
+  // 修改项目
+  const handleUpdateProject = async (projectName: string) => {
+    try {
+      await updateProject(projectId as string, {
+        name: projectName,
+      })
+      setProjectDetail((pd) => ({ ...pd, name: projectName } as ProjectDetail))
+      setShowProjectSettingModal(false)
+      Toast.success('修改成功')
+    } catch (error: any) {
+      Toast.error(error.message) 
+    }
+  }
+
+  // 项目设置
+  const handleSettingProject = useCallback(
+    (type: string) => {
+      rightBtnGroupActions[type] &&
+        rightBtnGroupActions[type](projectId as string)
+    },
+    [rightBtnGroupActions],
+  )
 
   // 新增任务
   const handleCreateTask = async (formData: any) => {
@@ -96,12 +187,11 @@ function Tasks() {
       <NavBar
         className=" sticky left-0 right-0 top-0"
         right={
-          <button
-            className="daisy-btn daisy-btn-primary daisy-btn-sm"
-            onClick={handleShowTaskSettingModal}
-          >
-            新增任务
-          </button>
+          <NavRightBtnGroup
+            dataSource={projectDetail}
+            onCreateTask={handleShowTaskSettingModal}
+            onSettingProject={handleSettingProject}
+          />
         }
         onBack={handleBack}
       />
@@ -112,7 +202,7 @@ function Tasks() {
 
         <div className="mb-4 sm:flex sm:flex-row-reverse sm:items-center sm:justify-between">
           <div className="daisy-tabs-boxed daisy-tabs mb-3 sm:mb-0 sm:bg-transparent">
-            <a className="daisy-tab px-3 daisy-tab-active">
+            <a className="daisy-tab daisy-tab-active px-3">
               <ListBulletIcon className="mr-1 h-4 w-4" />
               表格
             </a>
@@ -129,7 +219,6 @@ function Tasks() {
               onSelect={(value) => setOrderBy(value as string)}
               onSortMethodChange={(value) => setSortMethod(value)}
             />
-            <MoreSettingDropdown />
           </div>
         </div>
 
@@ -149,6 +238,15 @@ function Tasks() {
         title="新增任务"
         onOk={handleCreateTask}
         onCancel={() => setShowTaskSettingModal(false)}
+      />
+
+      <ProjectModal
+        ref={projectModalRef}
+        title="修改项目"
+        clearOnClose
+        open={showProjectSettingModal}
+        onCancel={() => setShowProjectSettingModal(false)}
+        onOk={handleUpdateProject}
       />
     </div>
   )

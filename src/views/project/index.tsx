@@ -12,37 +12,7 @@ import FloatTips from '@/components/shared/float-tips'
 import ProjectModal from '@/components/project/project-modal'
 import Modal from '@/components/shared/modal'
 import Toast from '@/components/shared/toast'
-
-interface ProjectItem {
-  name: string
-  project_id: string
-  status: number
-}
-
-// 创建项目
-function fetchCreateProject(projectName: string, teamId: string) {
-  return _post<ProjectItem>('/project/create', {
-    name: projectName,
-    team_id: teamId,
-  })
-}
-
-// 删除项目
-function deleteProject(projectId: string) {
-  return _delete(`/project/${projectId}`)
-}
-
-// 修改项目状态
-function updateProjectStatus(projectId: string, status: number) {
-  return _patch(`/project/${projectId}/status`, {
-    status,
-  })
-}
-
-// 获取项目列表
-function fetchProjectList(query: { status?: number; team_id: string }) {
-  return _get<ProjectItem[]>('/project/list', query)
-}
+import { fetchProjectList, fetchCreateProject, deleteProject, updateProjectStatus, ProjectItem } from './service'
 
 const statusTab = [
   {
@@ -133,7 +103,7 @@ function Project() {
 
   const projectHandler = {
     delete: (item: ProjectItem) => {
-      Modal.warn({
+      Modal.confirm({
         title: '确定要删除该项目吗？',
         content: '删除后无法恢复！',
         onOk: async () => {
@@ -148,7 +118,7 @@ function Project() {
       })
     },
     archive: (item: ProjectItem) => {
-      Modal.warn({
+      Modal.confirm({
         title: '确定要归档该项目吗？',
         content: '归档后项目将无法更改，但可在归档列表中恢复！',
         onOk: async () => {
@@ -203,7 +173,7 @@ function Project() {
 
   return (
     <div
-      className="relative max-h-[calc(100vh-48px)] overflow-y-scroll md:max-h-max md:overflow-y-auto"
+      className="relative"
       ref={containerRef}
     >
       <div className="sticky top-0 z-10 flex w-full items-center bg-base-100 p-4">
@@ -246,6 +216,7 @@ function Project() {
 
       <ProjectModal
         title="创建新项目"
+        clearOnClose
         open={showProjectModal}
         onCancel={() => setShowProjectModal(false)}
         onOk={handleCreateProject}

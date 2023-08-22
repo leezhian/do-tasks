@@ -6,3 +6,4 @@
 export * from './useLogout'
 export * from './useResize'
 export * from './useBodyOverflow'
+export * from './usePercent'
