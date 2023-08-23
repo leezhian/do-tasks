@@ -16,11 +16,22 @@ import {
   ArrowsPointingOutIcon,
   ArrowsPointingInIcon,
 } from '@heroicons/react/24/outline'
+import { useRequest } from 'ahooks'
+import { _get } from '@/helpers/request'
 import { TaskPriority, TaskStatus } from '@/helpers/enum'
 import { priorityColorMap, taskStatusMap } from '@/components/task/task-table'
+import Empty from '@/components/shared/empty'
 import Avatar from '@/components/shared/avatar'
 import PropertyList from '@/components/task/property-list'
+import ContentEmpty from '@/assets/images/content-empty.png'
 
+function fetchTaskContent(path: string) {
+  if (!path) {
+    return Promise.resolve('')
+  }
+
+  return _get<string>(path)
+}
 export interface TaskDetailDrawerProps extends DrawerProps {
   dataSource?: any
 }
@@ -28,6 +39,12 @@ export interface TaskDetailDrawerProps extends DrawerProps {
 function TaskDetailDrawer(props: TaskDetailDrawerProps) {
   const { dataSource, ...restProps } = props
   const [fullScreen, setFullScreen] = useState(false)
+  const { data: taskContentString } = useRequest(
+    () => fetchTaskContent(dataSource?.content as string),
+    {
+      refreshDeps: [dataSource?.content],
+    },
+  )
 
   const owners = useMemo(() => {
     return (
@@ -46,7 +63,9 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
       destroyOnClose
       placement="right"
       width={fullScreen ? '100vw' : '768px'}
-      closeIcon={<span className='inline-block w-4 h-4 text-base-content'>✕</span>}
+      closeIcon={
+        <span className="inline-block h-4 w-4 text-base-content">✕</span>
+      }
       extra={
         <div className="flex items-center space-x-1">
           <label
@@ -69,7 +88,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
     >
       <h3 className="text-xl font-semibold">{dataSource?.title}</h3>
       {/* 属性栏 start */}
-      <PropertyList className="px-2 py-4" labelCol={100}>
+      <PropertyList className="px-2 pt-4" labelCol={100}>
         <PropertyList.Item
           label="流程类型"
           icon={<PuzzlePieceIcon className="h-3 w-3" />}
@@ -102,7 +121,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
           icon={<UserGroupIcon className="h-3 w-3" />}
         >
           <Avatar
-            className="w-6 h-6 ml-0.5"
+            className="ml-0.5 h-6 w-6"
             url={dataSource?.reviewer.avatar}
             name={dataSource?.reviewer.name}
           />
@@ -144,8 +163,23 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
         </PropertyList.Item>
       </PropertyList>
       {/* 属性栏 end */}
+      <div className="daisy-divider before:h-px after:h-px"></div>
       {/* 内容区 start */}
-      
+      <div>
+        {/* 后续需要做一下 xss 风险处理 */}
+        {taskContentString && (
+          <div dangerouslySetInnerHTML={{ __html: taskContentString }}></div>
+        )}
+        {!taskContentString && (
+          <div className='mt-14'>
+            <Empty
+              imageStyle={{ height: '160px' }}
+              image={ContentEmpty}
+              description="暂无任务详情"
+            />
+          </div>
+        )}
+      </div>
       {/* 内容区 end */}
     </Drawer>
   )
