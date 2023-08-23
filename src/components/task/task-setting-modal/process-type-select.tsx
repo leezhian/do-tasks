@@ -51,7 +51,7 @@ const ProcessTypeSelect = memo((props: ProcessTypeSelectProps) => {
   const [processTypeList, setProcessTypeList] = useState<ProcessTypeOption[]>(
     [],
   )
-  const { loading } = useRequest(() => fetchProcessType(teamId ?? ''), {
+  const { } = useRequest(() => fetchProcessType(teamId ?? ''), {
     onSuccess: (data) => {
       const temp = data.map((item) => ({
         label: item.name,

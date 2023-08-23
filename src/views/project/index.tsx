@@ -33,7 +33,7 @@ function Project() {
   const [activeTab, setActiveTab] = useState(ProjectStatus.Active)
   const [projectList, setProjectList] = useState<ProjectItem[]>([])
   const [showProjectModal, setShowProjectModal] = useState(false)
-  const { loading } = useRequest(
+  const { } = useRequest(
     () =>
       fetchProjectList({
         status: activeTab,

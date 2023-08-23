@@ -12,7 +12,7 @@ export interface GlobalStore {
   setTheme: (theme: string) => void
 }
 
-export const useGlobalStore = create(devtools<GlobalStore>((set, get) => ({
+export const useGlobalStore = create(devtools<GlobalStore>((set) => ({
   theme: 'light',
   activeTeamId: '',
   setTheme: (theme: string) => set({ theme }),

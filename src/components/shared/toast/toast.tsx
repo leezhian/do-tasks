@@ -3,7 +3,7 @@
  * @Date: 2023-07-25 10:58:20
  * @Description: 吐司组件
  */
-import { useState, useEffect, useRef, useId } from 'react'
+import { useEffect, useRef, useId } from 'react'
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 
@@ -17,7 +17,7 @@ export interface ToastProps {
 }
 
 function Toast(props: ToastProps) {
-  const { content, duration = 3000, icon, direction, onClose } = props
+  const { content, duration = 3000, icon, onClose } = props
   const id = useId()
   const timer = useRef<NodeJS.Timeout | null>(null)
 

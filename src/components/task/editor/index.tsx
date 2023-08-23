@@ -25,7 +25,7 @@ const TaskEditor = forwardRef<Editor, TaskEditorProps>(function TaskEditor(props
       apiKey={tinyAPIKey}
       value={value}
       onEditorChange={onChange}
-      onInit={(evt, editor) => (editorRef.current = editor)}
+      onInit={(_evt, editor) => (editorRef.current = editor)}
       init={{
         skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
         content_css: theme === 'dark' ? 'dark' : 'default',

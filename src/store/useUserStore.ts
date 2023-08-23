@@ -16,7 +16,7 @@ export interface UserStore {
   setUserInfo: (userInfo: UserInfo) => void
 }
 
-export const useUserStore = create(devtools<UserStore>((set, get) => ({
+export const useUserStore = create(devtools<UserStore>((set) => ({
   token: localStorage.getItem(TOKEN_KEY),
   setToken: (token: string) => {
     set({ token })

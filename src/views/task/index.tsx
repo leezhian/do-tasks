@@ -86,7 +86,7 @@ function Tasks() {
     Record<string, (projectId: string) => void>
   >(() => {
     return {
-      update: (projectId: string) => {
+      update: () => {
         projectModalRef.current?.setFieldsValue({
           projectName: projectDetail?.name,
         })
