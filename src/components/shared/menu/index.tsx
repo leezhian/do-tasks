@@ -11,19 +11,22 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
+import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useResize } from '@/hooks'
 import AvatarCard from '@/components/shared/avatar-card'
-import FixedSearch from '@/components/shared/search-input/fixed-search'
-import { motion } from 'framer-motion'
+import FixedSearch, {SearchResultItem} from '@/components/shared/search-input/fixed-search'
+import TeamList from '@/components/project/team-list/intex'
 import { fadeVariants } from '@/helpers/variants'
 import { useBodyOverflow } from '@/hooks'
-import TeamList from '@/components/project/team-list/intex'
+import { SearchType } from '@/helpers/enum'
 
 export interface MenuProps {
   className?: string
 }
 
 function Menu() {
+  const navigate = useNavigate()
   const [showMenu, setShowMenu] = useState(false) // 是否显示菜单，pc必是true
   const [mobileMenuMounted, setMobileMenuMounted] = useState(false) // 是否挂载移动端
   const [menuCollapsed, setMenuCollapsed] = useState(false) // 菜单是否收起
@@ -50,8 +53,17 @@ function Menu() {
     setMobileMenuMounted(innerWidth < 768)
   })
 
-  const handleSearchItemClick = (item: any) => {
-    console.log(item)
+  const handleSearchItemClick = (item: SearchResultItem) => {
+    switch (item.type) {
+      case SearchType.Project:
+        navigate(`/${item.team_id}`)
+        break;
+      case SearchType.Task:
+        navigate(`/${item.team_id}/${item.project_id}`)
+        break;
+      default:
+        break;
+    }
     setShowSearch(false)
   }
 
@@ -81,7 +93,7 @@ function Menu() {
           showMenu ? 'flex' : 'hidden'
         } ${menuCollapsed ? 'md:w-12' : 'md:w-60'}`}
       >
-        <AvatarCard className="shrink-0" collapsed={menuCollapsed} />
+        <AvatarCard className="shrink-0" collapsed={menuCollapsed} onSearch={() => toggleSearchShow(true)} />
         <div className="daisy-divider mx-4 before:h-px after:h-px"></div>
 
         <div className="flex grow flex-col overflow-hidden">

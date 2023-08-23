@@ -4,15 +4,11 @@
  * @Description: 搜索结果选项
  */
 import { useCallback, useMemo } from 'react'
+import { SearchType } from '@/helpers/enum'
 
 export interface SearchSelectItemProps {
   data?: any
   onClick?: (item: any) => void
-}
-
-export enum SearchType {
-  Team = 1,
-  Task = 2,
 }
 
 function SearchSelectItem(props: SearchSelectItemProps) {
@@ -23,9 +19,9 @@ function SearchSelectItem(props: SearchSelectItemProps) {
     let name = ''
 
     switch (data?.type) {
-      case SearchType.Team:
+      case SearchType.Project:
         cls.push('daisy-badge-primary')
-        name = '团队'
+        name = '项目'
         break
       case SearchType.Task:
         cls.push('daisy-badge-neutral')
@@ -47,13 +43,13 @@ function SearchSelectItem(props: SearchSelectItemProps) {
 
   return (
     <li
-      className="flex w-full cursor-pointer items-center px-2 py-1.5 hover:bg-base-content/10"
+      className="flex w-full cursor-pointer items-center px-2 py-1.5 rounded-md hover:bg-base-content/10"
       onClick={handleClick}
     >
       {!!badgeConfig.name && (
         <div className={badgeConfig.classes}>{badgeConfig.name}</div>
       )}
-      <span className="w-full truncate">{data?.title}</span>
+      <span className="w-full truncate">{data?.name}</span>
     </li>
   )
 }

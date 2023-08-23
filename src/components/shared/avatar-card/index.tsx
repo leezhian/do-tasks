@@ -21,12 +21,16 @@ import { useUserStore } from '@/store/useUserStore'
 export interface AvatarCardProps {
   className?: string
   collapsed?: boolean // 是否收起
+  onSearch?: () => void
 }
 
 function AvatarCard(props: AvatarCardProps) {
-  const { className, collapsed = false } = props
+  const { className, collapsed = false, onSearch } = props
   const navigate = useNavigate()
-  const { setToken, userInfo } = useUserStore(state => ({ setToken: state.setToken, userInfo: state.userInfo }), shallow)
+  const { setToken, userInfo } = useUserStore(
+    (state) => ({ setToken: state.setToken, userInfo: state.userInfo }),
+    shallow,
+  )
   const { show: showLogoutConfirm } = useLogout(() => {
     setToken('')
     navigate('/login')
@@ -52,7 +56,11 @@ function AvatarCard(props: AvatarCardProps) {
     <div className={classes}>
       <div className={`flex items-center ${collapsed ? 'justify-center' : ''}`}>
         <div className="shrink-0">
-          <Avatar className={collapsed ? 'w-6' : ''} url={userInfo?.avatar} name={userInfo?.name} />
+          <Avatar
+            className={collapsed ? 'w-6' : ''}
+            url={userInfo?.avatar}
+            name={userInfo?.name}
+          />
         </div>
         {!collapsed && (
           <div className="grow truncate pl-2 text-lg">{userInfo?.name}</div>
@@ -67,6 +75,7 @@ function AvatarCard(props: AvatarCardProps) {
           animate="fadeIn"
           exit="fadeOut"
           className={`daisy-btn daisy-btn-ghost daisy-btn-sm mt-3 border-0`}
+          onClick={onSearch}
         >
           <MagnifyingGlassIcon className="h-6 w-6" />
         </motion.button>
@@ -118,7 +127,10 @@ function AvatarCard(props: AvatarCardProps) {
           exit="fadeOut"
           className="mt-2 hidden md:block"
         >
-          <div className="flex h-12 w-full cursor-pointer items-center rounded-lg bg-base-200 px-3">
+          <div
+            className="flex h-12 w-full cursor-pointer items-center rounded-lg bg-base-200 px-3"
+            onClick={onSearch}
+          >
             <MagnifyingGlassIcon className=" h-6 w-6 shrink-0" />
             <div className="grow pl-2 text-base-content/50">
               搜索任务 / 团队

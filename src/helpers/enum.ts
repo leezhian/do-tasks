@@ -27,3 +27,8 @@ export enum TaskStatus {
   ReviewFailed,
   Done,
 }
+
+export enum SearchType {
+  Project = '1',
+  Task = '2',
+}
