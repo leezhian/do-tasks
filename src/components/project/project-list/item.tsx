@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react'
 import type { MouseEvent } from 'react'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import { ProjectStatus } from '@/helpers/enum'
 import { usePercent } from '@/hooks'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'

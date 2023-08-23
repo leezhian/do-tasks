@@ -23,9 +23,12 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
-  plugins: [react(), VitePWA(
-    {
+  plugins: [
+    react(),
+    VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['apple-touch-icon.png'],
+
       workbox: {
         runtimeCaching: [
           {
@@ -41,7 +44,6 @@ export default defineConfig({
         name: 'Do Tasks',
         short_name: 'Do Tasks',
         description: '简单好用的任务协同工具',
-        theme_color: '#ffffff',
         icons: [
           {
             src: 'icon-192x192.png',
@@ -55,6 +57,5 @@ export default defineConfig({
           }
         ]
       }
-    }
-  )],
+    })],
 })

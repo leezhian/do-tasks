@@ -5,7 +5,7 @@
  */
 import { useMemo, useState } from 'react'
 import { Drawer, Tag, DrawerProps } from 'antd'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import {
   PuzzlePieceIcon,
   ClockIcon,

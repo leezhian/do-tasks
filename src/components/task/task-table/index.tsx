@@ -5,7 +5,7 @@
  */
 import { useState, useMemo, useCallback } from 'react'
 import type { Key } from 'react'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs'
 import { Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { TableRowSelection } from 'antd/es/table/interface'
