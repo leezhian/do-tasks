@@ -94,13 +94,20 @@ export function getProjectDetail(projectId: string) {
   return _get<ProjectDetail>(`/project/${projectId}`)
 }
 
+interface GetTaskListParams {
+  order_by?: string
+  order_method?: string
+  status?: number
+  object?: number
+}
+
 /**
  * @description: 获取任务列表
  * @param {string} projectId
  * @param {object} payload
  * @return {promise<Task[]>}
  */
-export function getTaskList(projectId: string, payload?: { order_by?: string, order_method?: string }) {
+export function getTaskList(projectId: string, payload?: GetTaskListParams) {
   if (!projectId) return Promise.resolve([])
   return _get<Task[]>('/task/list', { project_id: projectId, ...payload })
 }

@@ -1,26 +1,24 @@
 /*
  * @Author: kim
  * @Date: 2023-07-28 23:55:24
- * @Description: 筛选下拉框
+ * @Description: 对象筛选下拉框
  */
 import { useState, useCallback, useMemo } from 'react'
-import { FunnelIcon } from '@heroicons/react/24/solid'
+import { UserGroupIcon } from '@heroicons/react/24/solid'
 import { Select } from 'antd'
 import type { SelectProps } from 'antd'
-import { TaskStatus } from '@/helpers/enum'
 
 const filterOptions: SelectProps['options'] = [
-  { value: TaskStatus.Todo, label: '未完成' },
-  { value: TaskStatus.UnderReview, label: '审核中' },
-  { value: TaskStatus.Done, label: '已完成' },
+  { value: 1, label: '我的' },
+  { value: 0, label: '全部' },
 ]
 
-export interface FilterSelectProps {
+export interface ObjectSelectProps {
   value?: string | number
   onSelect?: (value: string | number) => void
 }
 
-function FilterSelect(props: FilterSelectProps) {
+function ObjectSelect(props: ObjectSelectProps) {
   const { value, onSelect } = props
   const [open, setOpen] = useState(false)
 
@@ -46,21 +44,20 @@ function FilterSelect(props: FilterSelectProps) {
         className="flex cursor-pointer items-center"
         onClick={handleLabelClick}
       >
-        <FunnelIcon className="mr-1 h-4 w-4" />
-        筛选 {value ? '·' : ''}
+        <UserGroupIcon className="mr-1 h-4 w-4" />
+        所属 {value ? '·' : ''}
       </div>
       <Select
         open={open}
         value={value}
         bordered={false}
-        allowClear
         options={filterOptions}
         onDropdownVisibleChange={toggleSelectOpen}
         dropdownStyle={{ minWidth: '76px' }}
-        onChange={onSelect}
+        onSelect={onSelect}
       />
     </label>
   )
 }
 
-export default FilterSelect
+export default ObjectSelect

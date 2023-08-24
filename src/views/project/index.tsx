@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import {
   PlusIcon,
   AdjustmentsHorizontalIcon,
+  BellIcon,
 } from '@heroicons/react/24/outline'
 import { useRequest } from 'ahooks'
 import { _delete, _get, _patch, _post } from '@/helpers/request'
@@ -12,7 +13,13 @@ import FloatTips from '@/components/shared/float-tips'
 import ProjectModal from '@/components/project/project-modal'
 import Modal from '@/components/shared/modal'
 import Toast from '@/components/shared/toast'
-import { fetchProjectList, fetchCreateProject, deleteProject, updateProjectStatus, ProjectItem } from './service'
+import {
+  fetchProjectList,
+  fetchCreateProject,
+  deleteProject,
+  updateProjectStatus,
+  ProjectItem,
+} from './service'
 
 const statusTab = [
   {
@@ -33,7 +40,7 @@ function Project() {
   const [activeTab, setActiveTab] = useState(ProjectStatus.Active)
   const [projectList, setProjectList] = useState<ProjectItem[]>([])
   const [showProjectModal, setShowProjectModal] = useState(false)
-  const { } = useRequest(
+  const {} = useRequest(
     () =>
       fetchProjectList({
         status: activeTab,
@@ -145,10 +152,7 @@ function Project() {
   }
 
   // 项目下拉列表处理
-  const handleProjectDropdownItem = (
-    name: string,
-    item: ProjectItem,
-  ) => {
+  const handleProjectDropdownItem = (name: string, item: ProjectItem) => {
     projectDropdownActions[name] && projectDropdownActions[name](item)
   }
 
@@ -173,10 +177,7 @@ function Project() {
   }
 
   return (
-    <div
-      className="relative"
-      ref={containerRef}
-    >
+    <div className="relative" ref={containerRef}>
       <div className="sticky top-0 z-10 flex w-full items-center bg-base-100 p-4">
         <button
           className="daisy-btn daisy-btn-primary"
@@ -201,9 +202,22 @@ function Project() {
           ))}
         </div>
 
-        <button className="daisy-btn daisy-btn-ghost ml-auto">
-          <AdjustmentsHorizontalIcon className="h-6 w-6" />
-        </button>
+        <div className="ml-auto inline-flex items-center">
+          {/* 通知 */}
+          <div
+            className="daisy-indicator sm:daisy-tooltip sm:daisy-tooltip-bottom "
+            data-tip="通知"
+          >
+            <span className="daisy-badge daisy-indicator-item daisy-badge-secondary right-3 top-1 h-2 w-2 p-0"></span>
+            <button className="daisy-btn daisy-btn-ghost daisy-btn-sm border-0">
+              <BellIcon className="h-6 w-6" />
+            </button>
+          </div>
+
+          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm">
+            <AdjustmentsHorizontalIcon className="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
       <ProjectList

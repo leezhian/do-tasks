@@ -7,7 +7,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowRightOnRectangleIcon,
-  BellIcon,
+  Cog6ToothIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import { shallow } from 'zustand/shallow'
@@ -93,14 +93,15 @@ function AvatarCard(props: AvatarCardProps) {
           iconClassName="h-6 w-6"
         />
 
-        {/* 通知 */}
+        {/* 设置 */}
         <div
-          className="daisy-indicator sm:daisy-tooltip sm:daisy-tooltip-bottom"
-          data-tip="通知"
+          className="sm:daisy-tooltip sm:daisy-tooltip-bottom"
+          data-tip="设置"
         >
-          <span className="daisy-badge daisy-indicator-item daisy-badge-secondary right-3 top-1 h-2 w-2 p-0"></span>
-          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm border-0">
-            <BellIcon className="h-6 w-6" />
+          <button
+            className="daisy-btn daisy-btn-ghost daisy-btn-sm border-0"
+          >
+            <Cog6ToothIcon className="h-6 w-6" />
           </button>
         </div>
 

@@ -12,7 +12,8 @@ import { usePercent } from '@/hooks'
 import { ProjectStatus } from '@/helpers/enum'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
-// import FilterSelect from '@/components/task/filter-select'
+import ObjectSelect from '@/components/task/object-select'
+import FilterSelect from '@/components/task/filter-select'
 import SortSelect from '@/components/task/sort-select'
 import FloatTips from '@/components/shared/float-tips'
 import NavRightBtnGroup from '@/components/task/nav-right-btn-group'
@@ -40,6 +41,8 @@ function Tasks() {
   const projectModalRef = useRef<ProjectModalRef>(null)
   const [orderBy, setOrderBy] = useState<string>() // 排序字段
   const [orderMethod, setSortMethod] = useState<string>() // 排序方式
+  const [filterStatus, setFilterStatus] = useState<number>() // 筛选状态
+  const [filterObject, setFilterObject] = useState<number>(1) // 筛选对象
   const [showTaskDetailDrawer, setShowTaskDetailDrawer] = useState(false)
   const [currentTaskDetail, setCurrentTaskDetail] = useState<any>(null)
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
@@ -61,9 +64,11 @@ function Tasks() {
       getTaskList(projectId as string, {
         order_by: orderBy,
         order_method: orderMethod,
+        status: filterStatus,
+        object: filterObject,
       }),
     {
-      refreshDeps: [projectId, orderBy, orderMethod],
+      refreshDeps: [projectId, orderBy, orderMethod, filterStatus, filterObject],
     },
   )
 
@@ -221,7 +226,14 @@ function Tasks() {
           </div>
 
           <div className="space-x-2">
-            {/* <FilterSelect /> */}
+            <ObjectSelect
+              value={filterObject}
+              onSelect={(value) => setFilterObject(value as number)}
+            />
+            <FilterSelect
+              value={filterStatus}
+              onSelect={(value) => setFilterStatus(value as number)}
+            />
             <SortSelect
               value={orderBy}
               onSelect={(value) => setOrderBy(value as string)}
