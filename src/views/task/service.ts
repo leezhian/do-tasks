@@ -1,5 +1,6 @@
 import { _get, _patch, _post } from '@/helpers/request'
 import type { FileInfo } from '@/typings/base'
+import { TaskStatus } from '@/helpers/enum'
 
 export interface TaskCreatePayload {
   title: string
@@ -110,4 +111,8 @@ interface GetTaskListParams {
 export function getTaskList(projectId: string, payload?: GetTaskListParams) {
   if (!projectId) return Promise.resolve([])
   return _get<Task[]>('/task/list', { project_id: projectId, ...payload })
+}
+
+export function updateTaskStatus(taskId: string, status: TaskStatus) {
+  return _patch<Task>(`/task/${taskId}/status`, { status })
 }

@@ -10,6 +10,7 @@ import { Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { TableRowSelection } from 'antd/es/table/interface'
 import Avatar from '@/components/shared/avatar'
+import TaskActionsDropdown from '@/components/task/task-actions-dropdown'
 import { TaskPriority, TaskStatus } from '@/helpers/enum'
 
 // 优先级颜色映射
@@ -48,10 +49,11 @@ export interface TaskTableProps {
   dataSource?: any[]
   loading?: boolean
   onTitleClick?: (record: any) => void
+  onDrowdownItemClick?: (record: any, status: TaskStatus) => void
 }
 
 function TaskTable(props: TaskTableProps) {
-  const { dataSource = [], loading, onTitleClick } = props
+  const { dataSource = [], loading, onTitleClick, onDrowdownItemClick } = props
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
 
   const handleTitleClick = useCallback((record: any) => {
@@ -138,12 +140,8 @@ function TaskTable(props: TaskTableProps) {
         title: '操作',
         dataIndex: 'operation',
         fixed: 'right',
-        render: () => (
-          <div>
-            <button className="daisy-btn daisy-btn-primary daisy-btn-xs">
-              完成
-            </button>
-          </div>
+        render: (_text, record) => (
+          <TaskActionsDropdown status={record?.status} onItemClick={(status) => onDrowdownItemClick?.(record, status)} />
         ),
       },
     ]

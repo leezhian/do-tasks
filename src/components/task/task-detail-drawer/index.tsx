@@ -23,6 +23,7 @@ import { priorityColorMap, taskStatusMap } from '@/components/task/task-table'
 import Empty from '@/components/shared/empty'
 import Avatar from '@/components/shared/avatar'
 import PropertyList from '@/components/task/property-list'
+import TaskActionsDropdown from '@/components/task/task-actions-dropdown'
 import ContentEmpty from '@/assets/images/content-empty.png'
 
 function fetchTaskContent(path: string) {
@@ -34,10 +35,11 @@ function fetchTaskContent(path: string) {
 }
 export interface TaskDetailDrawerProps extends DrawerProps {
   dataSource?: any
+  onDrowdownItemClick?: (record: any, status: TaskStatus) => void
 }
 
 function TaskDetailDrawer(props: TaskDetailDrawerProps) {
-  const { dataSource, ...restProps } = props
+  const { dataSource, onDrowdownItemClick, ...restProps } = props
   const [fullScreen, setFullScreen] = useState(false)
   const { data: taskContentString } = useRequest(
     () => fetchTaskContent(dataSource?.content as string),
@@ -80,9 +82,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
             <ArrowsPointingOutIcon className="daisy-swap-off h-4 w-4 fill-current" />
             <ArrowsPointingInIcon className="daisy-swap-on h-4 w-4 fill-current" />
           </label>
-          <button className="daisy-btn daisy-btn-primary daisy-btn-sm">
-            完成
-          </button>
+          <TaskActionsDropdown status={dataSource?.status} onItemClick={(status) => onDrowdownItemClick?.(dataSource, status)} />
         </div>
       }
     >

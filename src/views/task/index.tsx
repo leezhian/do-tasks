@@ -9,7 +9,7 @@ import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import { useRequest } from 'ahooks'
 import { _post, _get } from '@/helpers/request'
 import { usePercent } from '@/hooks'
-import { ProjectStatus } from '@/helpers/enum'
+import { ProjectStatus, TaskStatus } from '@/helpers/enum'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
 import ObjectSelect from '@/components/task/object-select'
@@ -31,8 +31,10 @@ import {
   getTaskList,
   getProjectDetail,
   updateProject,
+  updateTaskStatus,
   TaskCreatePayload,
   ProjectDetail,
+  Task
 } from './service'
 
 function Tasks() {
@@ -44,9 +46,10 @@ function Tasks() {
   const [filterStatus, setFilterStatus] = useState<number>() // 筛选状态
   const [filterObject, setFilterObject] = useState<number>(1) // 筛选对象
   const [showTaskDetailDrawer, setShowTaskDetailDrawer] = useState(false)
-  const [currentTaskDetail, setCurrentTaskDetail] = useState<any>(null)
+  const [currentTaskDetail, setCurrentTaskDetail] = useState<Task | null>(null)
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
   const [showProjectSettingModal, setShowProjectSettingModal] = useState(false)
+  const [taskList, setTaskList] = useState<Task[]>([])
   const [projectDetail, setProjectDetail] = useState<ProjectDetail>()
   useRequest(() => getProjectDetail(projectId as string), {
     onSuccess: (res) => {
@@ -59,7 +62,7 @@ function Tasks() {
     projectDetail?.task_summary.done_task_count ?? 0,
     projectDetail?.task_summary.total ?? 0,
   )
-  const { loading: listLoading, data: taskList } = useRequest(
+  const { loading: listLoading } = useRequest(
     () =>
       getTaskList(projectId as string, {
         order_by: orderBy,
@@ -68,6 +71,9 @@ function Tasks() {
         object: filterObject,
       }),
     {
+      onSuccess: (res) => {
+        setTaskList(res)
+      },
       refreshDeps: [projectId, orderBy, orderMethod, filterStatus, filterObject],
     },
   )
@@ -190,10 +196,30 @@ function Tasks() {
     }
   }
 
-  const showDetailDrawer = useCallback((detail: any) => {
+  const showDetailDrawer = useCallback((detail: Task) => {
     setCurrentTaskDetail(detail)
     setShowTaskDetailDrawer(true)
   }, [])
+
+  // 任务状态修改
+  const handleTaskStatusChange = useCallback(async (record: Task, status: TaskStatus) => {
+    await updateTaskStatus(record.task_id, status)
+    if(showTaskDetailDrawer) {
+      setCurrentTaskDetail(ctd => ({ ...ctd, status }) as Task)
+    }
+
+    setTaskList(tl => {
+      return tl?.map((item) => {
+        if (item.task_id === record.task_id) {
+          return {
+            ...item,
+            status,
+          }
+        }
+        return item
+      })
+    })
+  }, [showTaskDetailDrawer])
 
   return (
     <div className="w-full">
@@ -246,6 +272,7 @@ function Tasks() {
           loading={listLoading}
           dataSource={taskList}
           onTitleClick={showDetailDrawer}
+          onDrowdownItemClick={handleTaskStatusChange}
         />
       </section>
 
@@ -280,6 +307,7 @@ function Tasks() {
         open={showTaskDetailDrawer}
         onClose={() => setShowTaskDetailDrawer(false)}
         dataSource={currentTaskDetail}
+        onDrowdownItemClick={handleTaskStatusChange}
       />
     </div>
   )
