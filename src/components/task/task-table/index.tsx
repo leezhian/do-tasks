@@ -46,19 +46,35 @@ export const taskStatusMap = {
 }
 
 export interface TaskTableProps {
+  currentPage?: number
+  pageSize?: number
+  total?: number
   dataSource?: any[]
   loading?: boolean
   onTitleClick?: (record: any) => void
   onDrowdownItemClick?: (record: any, status: TaskStatus) => void
+  onPaginationChange?: (page: number, pageSize: number) => void
 }
 
 function TaskTable(props: TaskTableProps) {
-  const { dataSource = [], loading, onTitleClick, onDrowdownItemClick } = props
+  const { dataSource = [], currentPage = 1, pageSize = 20, total, loading, onTitleClick, onDrowdownItemClick, onPaginationChange } = props
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
 
   const handleTitleClick = useCallback((record: any) => {
     onTitleClick && onTitleClick(record)
   }, [onTitleClick])
+
+  // 分页配置
+  const paginationProps = useMemo(() => {
+    return {
+      current: currentPage,
+      pageSize,
+      showSizeChanger: false,
+      showQuickJumper: true,
+      total,
+      onChange: (page: number, pageSize: number) => onPaginationChange?.(page, pageSize),
+    }
+  }, [currentPage, pageSize, onPaginationChange, total])
 
   const columns = useMemo<ColumnsType<any>>(() => {
     return [
@@ -148,7 +164,6 @@ function TaskTable(props: TaskTableProps) {
   }, [handleTitleClick])
 
   const onSelectChange = (newSelectedRowKeys: Key[]) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys)
     setSelectedRowKeys(newSelectedRowKeys)
   }
 
@@ -168,7 +183,7 @@ function TaskTable(props: TaskTableProps) {
       columns={columns}
       dataSource={dataSource}
       rowSelection={rowSelection}
-      pagination={false}
+      pagination={paginationProps}
       rowKey={(record) => record.task_id}
       scroll={{ x: 1200 }}
     />

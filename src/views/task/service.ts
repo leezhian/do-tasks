@@ -96,6 +96,8 @@ export function getProjectDetail(projectId: string) {
 }
 
 interface GetTaskListParams {
+  page?: number
+  page_size?: number
   order_by?: string
   order_method?: string
   status?: number
@@ -109,8 +111,11 @@ interface GetTaskListParams {
  * @return {promise<Task[]>}
  */
 export function getTaskList(projectId: string, payload?: GetTaskListParams) {
-  if (!projectId) return Promise.resolve([])
-  return _get<Task[]>('/task/list', { project_id: projectId, ...payload })
+  if (!projectId) return Promise.reject('缺少项目id')
+  return _get<{
+    list: Task[]
+    total: number
+  }>('/task/list', { project_id: projectId, ...payload })
 }
 
 export function updateTaskStatus(taskId: string, status: TaskStatus) {

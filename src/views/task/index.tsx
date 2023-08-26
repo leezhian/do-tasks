@@ -3,7 +3,7 @@
  * @Date: 2023-07-26 18:49:09
  * @Description: 项目页
  */
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import { useRequest } from 'ahooks'
@@ -50,6 +50,8 @@ function Tasks() {
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
   const [showProjectSettingModal, setShowProjectSettingModal] = useState(false)
   const [taskList, setTaskList] = useState<Task[]>([])
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [taskToast, setTaskToast] = useState<number>()
   const [projectDetail, setProjectDetail] = useState<ProjectDetail>()
   useRequest(() => getProjectDetail(projectId as string), {
     onSuccess: (res) => {
@@ -65,6 +67,7 @@ function Tasks() {
   const { loading: listLoading } = useRequest(
     () =>
       getTaskList(projectId as string, {
+        page: currentPage,
         order_by: orderBy,
         order_method: orderMethod,
         status: filterStatus,
@@ -72,11 +75,16 @@ function Tasks() {
       }),
     {
       onSuccess: (res) => {
-        setTaskList(res)
+        setTaskList(res.list)
+        setTaskToast(res.total)
       },
-      refreshDeps: [projectId, orderBy, orderMethod, filterStatus, filterObject],
+      refreshDeps: [currentPage, projectId, orderBy, orderMethod, filterStatus, filterObject],
     },
   )
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [projectId, orderBy, orderMethod, filterStatus, filterObject])
 
   // 返回上一页
   const handleBack = () => {
@@ -269,10 +277,13 @@ function Tasks() {
         </div>
 
         <TaskTable
+          currentPage={currentPage}
+          total={taskToast}
           loading={listLoading}
           dataSource={taskList}
           onTitleClick={showDetailDrawer}
           onDrowdownItemClick={handleTaskStatusChange}
+          onPaginationChange={(page) => setCurrentPage(page)}
         />
       </section>
 
