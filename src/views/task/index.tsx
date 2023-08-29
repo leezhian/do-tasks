@@ -12,6 +12,7 @@ import { usePercent } from '@/hooks'
 import { ProjectStatus } from '@/helpers/enum'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
+import TaskDataBoard from '@/components/task/task-databoard'
 import ObjectSelect from '@/components/task/object-select'
 import FilterSelect from '@/components/task/filter-select'
 import SortSelect from '@/components/task/sort-select'
@@ -36,6 +37,7 @@ import {
 function Tasks() {
   const navigate = useNavigate()
   const { projectId } = useParams()
+  const [activeTab, setActiveTab] = useState<string>('table')
   const projectModalRef = useRef<ProjectModalRef>(null)
   const [orderBy, setOrderBy] = useState<string>() // 排序字段
   const [orderMethod, setSortMethod] = useState<string>() // 排序方式
@@ -194,11 +196,17 @@ function Tasks() {
 
         <div className="mb-4 sm:flex sm:flex-row-reverse sm:items-center sm:justify-between">
           <div className="daisy-tabs-boxed daisy-tabs mb-3 sm:mb-0 sm:bg-transparent">
-            <a className="daisy-tab daisy-tab-active px-3">
+            <a
+              className={`daisy-tab px-3 ${activeTab === 'table' ? 'daisy-tab-active' : ''}`}
+              onClick={() => setActiveTab('table')}
+            >
               <ListBulletIcon className="mr-1 h-4 w-4" />
               表格
             </a>
-            <a className="daisy-tab px-3">
+            <a
+              className={`daisy-tab px-3 ${activeTab === 'databoard' ? 'daisy-tab-active' : ''}`}
+              onClick={() => setActiveTab('databoard')}
+            >
               <ChartBarIcon className="mr-1 h-4 w-4" />
               度量
             </a>
@@ -221,12 +229,16 @@ function Tasks() {
           </div>
         </div>
 
-        <TaskTable
-          orderBy={orderBy}
-          orderMethod={orderMethod}
-          filterStatus={filterStatus}
-          filterObject={filterObject}
-        />
+        {activeTab === 'table' ? (
+          <TaskTable
+            orderBy={orderBy}
+            orderMethod={orderMethod}
+            filterStatus={filterStatus}
+            filterObject={filterObject}
+          />
+        ) : (
+          <TaskDataBoard object={filterObject} />
+        )}
       </section>
 
       {/* remark 并不会跟随筛选改变 */}
