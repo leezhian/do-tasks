@@ -3,15 +3,19 @@
  * @Date: 2023-07-27 15:45:35
  * @Description: 表格
  */
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import type { Key } from 'react'
 import dayjs from 'dayjs'
 import { Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { TableRowSelection } from 'antd/es/table/interface'
+import { useRequest } from 'ahooks'
+import { useParams } from 'react-router-dom'
 import Avatar from '@/components/shared/avatar'
+import TaskDetailDrawer from '@/components/task/task-detail-drawer'
 import TaskActionsDropdown from '@/components/task/task-actions-dropdown'
 import { TaskPriority, TaskStatus } from '@/helpers/enum'
+import { getTaskList, updateTaskStatus, Task } from '@/views/task/service'
 
 // 优先级颜色映射
 export const priorityColorMap = {
@@ -46,35 +50,92 @@ export const taskStatusMap = {
 }
 
 export interface TaskTableProps {
-  currentPage?: number
-  pageSize?: number
-  total?: number
-  dataSource?: any[]
-  loading?: boolean
-  onTitleClick?: (record: any) => void
-  onDrowdownItemClick?: (record: any, status: TaskStatus) => void
-  onPaginationChange?: (page: number, pageSize: number) => void
+  orderBy?: string
+  orderMethod?: string
+  filterObject?: number
+  filterStatus?: number
 }
 
 function TaskTable(props: TaskTableProps) {
-  const { dataSource = [], currentPage = 1, pageSize = 20, total, loading, onTitleClick, onDrowdownItemClick, onPaginationChange } = props
+  const { projectId } = useParams()
+  const {
+    orderBy,
+    orderMethod,
+    filterStatus,
+    filterObject,
+  } = props
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
+  const [taskList, setTaskList] = useState<Task[]>([]) // 任务列表
+  const [currentPage, setCurrentPage] = useState<number>(1) // 当前页码
+  const [taskToast, setTaskToast] = useState<number>() // 任务总数
+  const [showTaskDetailDrawer, setShowTaskDetailDrawer] = useState(false)
+  const [currentTaskDetail, setCurrentTaskDetail] = useState<Task | null>(null)
+  const { loading: listLoading } = useRequest(
+    () =>
+      getTaskList(projectId as string, {
+        page: currentPage,
+        order_by: orderBy,
+        order_method: orderMethod,
+        status: filterStatus,
+        object: filterObject,
+      }),
+    {
+      onSuccess: (res) => {
+        setTaskList(res.list)
+        setTaskToast(res.total)
+      },
+      refreshDeps: [
+        currentPage,
+        projectId,
+        orderBy,
+        orderMethod,
+        filterStatus,
+        filterObject,
+      ],
+    },
+  )
 
-  const handleTitleClick = useCallback((record: any) => {
-    onTitleClick && onTitleClick(record)
-  }, [onTitleClick])
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [projectId, orderBy, orderMethod, filterStatus, filterObject])
+
+  // 打开任务详情弹窗
+  const openTaskDetail = useCallback((record: Task) => {
+    setCurrentTaskDetail(record)
+    setShowTaskDetailDrawer(true)
+  }, [])
+
+  // 任务状态修改
+  const handleTaskStatusChange = useCallback(async (record: Task, status: TaskStatus) => {
+    await updateTaskStatus(record.task_id, status)
+    if(showTaskDetailDrawer) {
+      setCurrentTaskDetail(ctd => ({ ...ctd, status }) as Task)
+    }
+
+    setTaskList(tl => {
+      return tl?.map((item) => {
+        if (item.task_id === record.task_id) {
+          return {
+            ...item,
+            status,
+          }
+        }
+        return item
+      })
+    })
+  }, [showTaskDetailDrawer])
 
   // 分页配置
   const paginationProps = useMemo(() => {
     return {
       current: currentPage,
-      pageSize,
+      pageSize: 20,
       showSizeChanger: false,
       showQuickJumper: true,
-      total,
-      onChange: (page: number, pageSize: number) => onPaginationChange?.(page, pageSize),
+      total: taskToast,
+      onChange: (page: number) => setCurrentPage(page),
     }
-  }, [currentPage, pageSize, onPaginationChange, total])
+  }, [currentPage, taskToast])
 
   const columns = useMemo<ColumnsType<any>>(() => {
     return [
@@ -83,7 +144,9 @@ function TaskTable(props: TaskTableProps) {
         dataIndex: 'title',
         ellipsis: true,
         width: 240,
-        render: (text, record) => <a onClick={() => handleTitleClick(record)}>{text}</a>,
+        render: (text, record) => (
+          <a onClick={() => openTaskDetail(record)}>{text}</a>
+        ),
       },
       {
         title: '流程类型',
@@ -157,11 +220,14 @@ function TaskTable(props: TaskTableProps) {
         dataIndex: 'operation',
         fixed: 'right',
         render: (_text, record) => (
-          <TaskActionsDropdown status={record?.status} onItemClick={(status) => onDrowdownItemClick?.(record, status)} />
+          <TaskActionsDropdown
+            status={record?.status}
+            onItemClick={(status) => handleTaskStatusChange(record, status)}
+          />
         ),
       },
     ]
-  }, [handleTitleClick])
+  }, [handleTaskStatusChange])
 
   const onSelectChange = (newSelectedRowKeys: Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -178,15 +244,24 @@ function TaskTable(props: TaskTableProps) {
   }
 
   return (
-    <Table
-      loading={loading}
-      columns={columns}
-      dataSource={dataSource}
-      rowSelection={rowSelection}
-      pagination={paginationProps}
-      rowKey={(record) => record.task_id}
-      scroll={{ x: 1200 }}
-    />
+    <>
+      <Table
+        loading={listLoading}
+        columns={columns}
+        dataSource={taskList}
+        rowSelection={rowSelection}
+        pagination={paginationProps}
+        rowKey={(record) => record.task_id}
+        scroll={{ x: 1200 }}
+      />
+      {/* 任务详情弹窗 */}
+      <TaskDetailDrawer
+        open={showTaskDetailDrawer}
+        onClose={() => setShowTaskDetailDrawer(false)}
+        dataSource={currentTaskDetail}
+        onDrowdownItemClick={handleTaskStatusChange}
+      />
+    </>
   )
 }
 

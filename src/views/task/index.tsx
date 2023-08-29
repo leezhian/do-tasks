@@ -3,13 +3,13 @@
  * @Date: 2023-07-26 18:49:09
  * @Description: 项目页
  */
-import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import { useRequest } from 'ahooks'
 import { _post, _get } from '@/helpers/request'
 import { usePercent } from '@/hooks'
-import { ProjectStatus, TaskStatus } from '@/helpers/enum'
+import { ProjectStatus } from '@/helpers/enum'
 import NavBar from '@/components/shared/nav-bar'
 import TaskTable from '@/components/task/task-table'
 import ObjectSelect from '@/components/task/object-select'
@@ -19,7 +19,6 @@ import FloatTips from '@/components/shared/float-tips'
 import NavRightBtnGroup from '@/components/task/nav-right-btn-group'
 import Modal from '@/components/shared/modal'
 import TaskSettingModal from '@/components/task/task-setting-modal'
-import TaskDetailDrawer from '@/components/task/task-detail-drawer'
 import ProjectModal, {
   ProjectModalRef,
 } from '@/components/project/project-modal'
@@ -28,13 +27,10 @@ import { updateProjectStatus } from '@/views/project/service'
 import {
   uploadFile,
   createTask,
-  getTaskList,
   getProjectDetail,
   updateProject,
-  updateTaskStatus,
   TaskCreatePayload,
   ProjectDetail,
-  Task
 } from './service'
 
 function Tasks() {
@@ -45,13 +41,8 @@ function Tasks() {
   const [orderMethod, setSortMethod] = useState<string>() // 排序方式
   const [filterStatus, setFilterStatus] = useState<number>() // 筛选状态
   const [filterObject, setFilterObject] = useState<number>(1) // 筛选对象
-  const [showTaskDetailDrawer, setShowTaskDetailDrawer] = useState(false)
-  const [currentTaskDetail, setCurrentTaskDetail] = useState<Task | null>(null)
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
   const [showProjectSettingModal, setShowProjectSettingModal] = useState(false)
-  const [taskList, setTaskList] = useState<Task[]>([])
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [taskToast, setTaskToast] = useState<number>()
   const [projectDetail, setProjectDetail] = useState<ProjectDetail>()
   useRequest(() => getProjectDetail(projectId as string), {
     onSuccess: (res) => {
@@ -64,27 +55,6 @@ function Tasks() {
     projectDetail?.task_summary.done_task_count ?? 0,
     projectDetail?.task_summary.total ?? 0,
   )
-  const { loading: listLoading } = useRequest(
-    () =>
-      getTaskList(projectId as string, {
-        page: currentPage,
-        order_by: orderBy,
-        order_method: orderMethod,
-        status: filterStatus,
-        object: filterObject,
-      }),
-    {
-      onSuccess: (res) => {
-        setTaskList(res.list)
-        setTaskToast(res.total)
-      },
-      refreshDeps: [currentPage, projectId, orderBy, orderMethod, filterStatus, filterObject],
-    },
-  )
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [projectId, orderBy, orderMethod, filterStatus, filterObject])
 
   // 返回上一页
   const handleBack = () => {
@@ -204,31 +174,6 @@ function Tasks() {
     }
   }
 
-  const showDetailDrawer = useCallback((detail: Task) => {
-    setCurrentTaskDetail(detail)
-    setShowTaskDetailDrawer(true)
-  }, [])
-
-  // 任务状态修改
-  const handleTaskStatusChange = useCallback(async (record: Task, status: TaskStatus) => {
-    await updateTaskStatus(record.task_id, status)
-    if(showTaskDetailDrawer) {
-      setCurrentTaskDetail(ctd => ({ ...ctd, status }) as Task)
-    }
-
-    setTaskList(tl => {
-      return tl?.map((item) => {
-        if (item.task_id === record.task_id) {
-          return {
-            ...item,
-            status,
-          }
-        }
-        return item
-      })
-    })
-  }, [showTaskDetailDrawer])
-
   return (
     <div className="w-full">
       <NavBar
@@ -277,13 +222,10 @@ function Tasks() {
         </div>
 
         <TaskTable
-          currentPage={currentPage}
-          total={taskToast}
-          loading={listLoading}
-          dataSource={taskList}
-          onTitleClick={showDetailDrawer}
-          onDrowdownItemClick={handleTaskStatusChange}
-          onPaginationChange={(page) => setCurrentPage(page)}
+          orderBy={orderBy}
+          orderMethod={orderMethod}
+          filterStatus={filterStatus}
+          filterObject={filterObject}
         />
       </section>
 
@@ -311,14 +253,6 @@ function Tasks() {
         open={showProjectSettingModal}
         onCancel={() => setShowProjectSettingModal(false)}
         onOk={handleUpdateProject}
-      />
-
-      {/* 任务详情弹窗 */}
-      <TaskDetailDrawer
-        open={showTaskDetailDrawer}
-        onClose={() => setShowTaskDetailDrawer(false)}
-        dataSource={currentTaskDetail}
-        onDrowdownItemClick={handleTaskStatusChange}
       />
     </div>
   )
