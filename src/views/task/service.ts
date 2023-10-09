@@ -13,6 +13,8 @@ export interface TaskCreatePayload {
   content?: string
 }
 
+export interface TaskUpdatePayload extends Partial<TaskCreatePayload> {}
+
 export interface ProjectDetail {
   project_id: string
   name: string
@@ -120,4 +122,14 @@ export function getTaskList(projectId: string, payload?: GetTaskListParams) {
 
 export function updateTaskStatus(taskId: string, status: TaskStatus) {
   return _patch<Task>(`/task/${taskId}/status`, { status })
+}
+
+/**
+ * @description: 更新任务详情
+ * @param {string} taskId
+ * @param {TaskUpdatePayload} payload
+ * @return {*}
+ */
+export function updateTask(taskId: string, payload: TaskUpdatePayload) {
+  return _patch(`/task/${taskId}`, payload)
 }

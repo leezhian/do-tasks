@@ -15,7 +15,7 @@ export interface MaskProps {
   onClick?: () => void
 }
 
-function Mask({ children, show = false, zIndex = 50, onClick }: MaskProps) {
+function Mask({ children, show = false, zIndex = 1000, onClick }: MaskProps) {
   useBodyOverflow(show)
 
   return (

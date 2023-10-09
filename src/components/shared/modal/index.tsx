@@ -113,7 +113,7 @@ function Modal(props: ModalProps) {
           <Mask show={open} />
           <AnimatePresence>
             <div
-              className={`fixed inset-0 z-90 ${
+              className={`fixed inset-0 z-1000 ${
                 animateState || open ? '' : 'hidden'
               }`}
             >
