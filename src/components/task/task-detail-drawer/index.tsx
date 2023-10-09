@@ -1,7 +1,7 @@
 /*
  * @Author: kim
  * @Date: 2023-08-22 18:38:52
- * @Description:
+ * @Description: 任务详情抽屉
  */
 import { useMemo, useState, useRef } from 'react'
 import { Drawer, Tag, DrawerProps } from 'antd'
@@ -40,20 +40,65 @@ function fetchTaskContent(path: string) {
 
   return _get<string>(path)
 }
+
+function fetchTaskDetail(taskId: string) {
+  if (!taskId) {
+    return Promise.reject('没有任务id')
+  }
+  return _get<TaskDetail>(`/task/${taskId}`)
+}
+
 export interface TaskDetailDrawerProps extends DrawerProps {
-  dataSource?: any
+  // dataSource?: any
+  taskId?: string
   onDrowdownItemClick?: (record: any, status: TaskStatus) => void
 }
 
+export interface TaskDetail {
+  content?: string
+  createdAt: string
+  end_time: number
+  priority: number
+  start_time: number
+  status: number
+  task_id: string
+  title: string
+  owners: {
+    avatar: string
+    name: string
+    uid: string
+  }[]
+  process_type: {
+    id: number
+    name: string
+  }
+  reviewer: {
+    avatar: string
+    name: string
+    uid: string
+  }
+}
+
 function TaskDetailDrawer(props: TaskDetailDrawerProps) {
-  const { dataSource, onDrowdownItemClick, ...restProps } = props
+  const { taskId, onDrowdownItemClick, ...restProps } = props
   const taskModalRef = useRef<TaskModalRef>(null)
+  const [dataSource, setDataSource] = useState<TaskDetail>()
   const [fullScreen, setFullScreen] = useState(false)
   const [showTaskSettingModal, setShowTaskSettingModal] = useState(false)
   const { data: taskContentString } = useRequest(
     () => fetchTaskContent(dataSource?.content as string),
     {
       refreshDeps: [dataSource?.content],
+    },
+  )
+  const { refresh: refreshTaskDetail } = useRequest(
+    () => fetchTaskDetail(taskId as string),
+    {
+      onSuccess: (res) => {
+        setDataSource(res)
+      },
+      onError: () => {},
+      refreshDeps: [taskId],
     },
   )
 
@@ -69,6 +114,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
   }, [dataSource?.owners])
 
   const handleShowTaskSettingModal = () => {
+    if(!dataSource) return
     setShowTaskSettingModal(true)
     
     // 回填数据
@@ -106,8 +152,9 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
         payload.content = res.url
       }
 
-      await updateTask(dataSource.task_id ?? '', payload)
+      await updateTask(dataSource?.task_id ?? '', payload)
       Toast.success('修改任务成功')
+      refreshTaskDetail()
       setShowTaskSettingModal(false)
     } catch (error: any) {
       Toast.error(error.message)

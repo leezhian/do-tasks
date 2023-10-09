@@ -33,6 +33,7 @@ export interface ProjectDetail {
 }
 
 export interface Task {
+  content?: string
   createdAt: string
   end_time: number
   priority: number

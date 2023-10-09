@@ -69,7 +69,7 @@ function TaskTable(props: TaskTableProps) {
   const [currentPage, setCurrentPage] = useState<number>(1) // 当前页码
   const [taskToast, setTaskToast] = useState<number>() // 任务总数
   const [showTaskDetailDrawer, setShowTaskDetailDrawer] = useState(false)
-  const [currentTaskDetail, setCurrentTaskDetail] = useState<Task | null>(null)
+  const [currentTaskId, setCurrentTaskId] = useState<string>()
   const { loading: listLoading } = useRequest(
     () =>
       getTaskList(projectId as string, {
@@ -101,16 +101,13 @@ function TaskTable(props: TaskTableProps) {
 
   // 打开任务详情弹窗
   const openTaskDetail = useCallback((record: Task) => {
-    setCurrentTaskDetail(record)
+    setCurrentTaskId(record.task_id)
     setShowTaskDetailDrawer(true)
   }, [])
 
   // 任务状态修改
   const handleTaskStatusChange = useCallback(async (record: Task, status: TaskStatus) => {
     await updateTaskStatus(record.task_id, status)
-    if(showTaskDetailDrawer) {
-      setCurrentTaskDetail(ctd => ({ ...ctd, status }) as Task)
-    }
 
     setTaskList(tl => {
       return tl?.map((item) => {
@@ -123,7 +120,7 @@ function TaskTable(props: TaskTableProps) {
         return item
       })
     })
-  }, [showTaskDetailDrawer])
+  }, [])
 
   // 分页配置
   const paginationProps = useMemo(() => {
@@ -258,7 +255,7 @@ function TaskTable(props: TaskTableProps) {
       <TaskDetailDrawer
         open={showTaskDetailDrawer}
         onClose={() => setShowTaskDetailDrawer(false)}
-        dataSource={currentTaskDetail}
+        taskId={currentTaskId}
         onDrowdownItemClick={handleTaskStatusChange}
       />
     </>
