@@ -4,6 +4,7 @@ import EmptyTeam from '@/views/empty/team'
 import Project from '@/views/project'
 import Login from '@/views/login'
 import Task from '@/views/task'
+import Notice from '@/views/notice'
 import AuthGuard from '@/helpers/auth.guard'
 
 const AuthMainLayout = AuthGuard(MainLayout)
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: '/:teamId',
         element: <Project />
+      },
+      {
+        path: '/:teamId/notice',
+        element: <Notice />
       },
       {
         path: '/:teamId/:projectId',

@@ -96,6 +96,12 @@ function Project() {
     }
   }
 
+  const navigateToNotice = () => {
+    navigate(`notice`, {
+      relative: 'path',
+    })
+  }
+
   // 移除本地项目列表
   const removeProjectFromLocal = (projectId: string) => {
     const newProjectList = [...projectList]
@@ -207,8 +213,9 @@ function Project() {
           <div
             className="daisy-indicator sm:daisy-tooltip sm:daisy-tooltip-bottom "
             data-tip="通知"
+            onClick={navigateToNotice}
           >
-            <span className="daisy-badge daisy-indicator-item daisy-badge-secondary right-3 top-1 h-2 w-2 p-0"></span>
+            {/* <span className="daisy-badge daisy-indicator-item daisy-badge-secondary right-3 top-1 h-2 w-2 p-0"></span> */}
             <button className="daisy-btn daisy-btn-ghost daisy-btn-sm border-0">
               <BellIcon className="h-6 w-6" />
             </button>

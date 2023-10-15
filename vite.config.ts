@@ -9,7 +9,7 @@ export default defineConfig({
     open: true,
     host: '0.0.0.0',
     proxy: {
-      '^/(auth|user|team|project|task|process-type|common)': {
+      '^/(auth|user|team|project|task|process-type|notice|common)': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       }

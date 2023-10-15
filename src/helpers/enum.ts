@@ -32,3 +32,10 @@ export enum SearchType {
   Project = '1',
   Task = '2',
 }
+
+// 任务日志类型
+export enum TaskLogType {
+  Delete,
+  Create,
+  Update
+}
