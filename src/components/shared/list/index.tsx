@@ -3,7 +3,7 @@
  * @Date: 2023-07-22 01:46:37
  * @Description: 列表
  */
-import { useMemo } from 'react'
+import { useMemo, forwardRef } from 'react'
 import type { ReactNode } from 'react'
 import ContentEmpty from '@/assets/images/content-empty.png'
 import Empty from '@/components/shared/empty'
@@ -16,7 +16,7 @@ export interface ListProps {
   loading?: boolean
 }
 
-function List(props: ListProps) {
+const List = forwardRef<HTMLUListElement, ListProps>((props, ref) => {
   const {
     className,
     dataSource = [],
@@ -50,7 +50,11 @@ function List(props: ListProps) {
     )
   }, [dataSource, renderItem, renderEmpty, loading])
 
-  return <ul className={className}>{content}</ul>
-}
+  return (
+    <ul ref={ref} className={className}>
+      {content}
+    </ul>
+  )
+})
 
 export default List
