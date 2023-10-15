@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ChartBarIcon, ListBulletIcon } from '@heroicons/react/24/solid'
 import { useRequest } from 'ahooks'
 import { _post, _get } from '@/helpers/request'
+import { upload } from '@/helpers/upload-file'
 import { usePercent } from '@/hooks'
 import { ProjectStatus } from '@/helpers/enum'
 import NavBar from '@/components/shared/nav-bar'
@@ -26,7 +27,6 @@ import ProjectModal, {
 import Toast from '@/components/shared/toast'
 import { updateProjectStatus } from '@/views/project/service'
 import {
-  uploadFile,
   createTask,
   getProjectDetail,
   updateProject,
@@ -161,15 +161,11 @@ function Tasks() {
       // 内容上传
       const { content } = formData
       if (content && content.trim() !== '') {
-        const blob = new Blob([content], { type: 'text/html' })
-        const formData = new FormData()
-        formData.append('file', blob, `${Date.now()}.html`)
-        const res = await uploadFile(formData)
+        const res = await upload('text/html', `${Date.now()}.html`, content)
         payload.content = res.url
       }
 
-      const res = await createTask(projectId ?? '', payload)
-      console.log(res)
+      await createTask(projectId ?? '', payload)
       setShowTaskSettingModal(false)
     } catch (error: any) {
       Toast.error(error.message)

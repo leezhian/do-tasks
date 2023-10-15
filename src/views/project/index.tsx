@@ -11,6 +11,7 @@ import { ProjectStatus } from '@/helpers/enum'
 import ProjectList from '@/components/project/project-list'
 import FloatTips from '@/components/shared/float-tips'
 import ProjectModal from '@/components/project/project-modal'
+import TeamModal, { TeamModalRef } from '@/components/project/team-modal'
 import Modal from '@/components/shared/modal'
 import Toast from '@/components/shared/toast'
 import {
@@ -19,6 +20,8 @@ import {
   deleteProject,
   updateProjectStatus,
   ProjectItem,
+  fetchTeam,
+  updateTeam,
 } from './service'
 
 const statusTab = [
@@ -36,10 +39,12 @@ function Project() {
   const navigate = useNavigate()
   const { teamId } = useParams()
   const containerRef = useRef<HTMLDivElement>(null)
+  const teamModalRef = useRef<TeamModalRef>(null)
   const [cardAutoWidth, setCardAutoWidth] = useState(false) // 卡片是否自适应宽度
   const [activeTab, setActiveTab] = useState(ProjectStatus.Active)
   const [projectList, setProjectList] = useState<ProjectItem[]>([])
   const [showProjectModal, setShowProjectModal] = useState(false)
+  const [showTeamModal, setShowTeamModal] = useState(false)
   const {} = useRequest(
     () =>
       fetchProjectList({
@@ -100,6 +105,30 @@ function Project() {
     navigate(`notice`, {
       relative: 'path',
     })
+  }
+
+  const handleShowTeamModal = async () => {
+    const res = await fetchTeam(teamId ?? '')
+    teamModalRef.current?.setFieldsValue({
+      teamName: res.name,
+      members: res.members,
+    })
+
+    setShowTeamModal(true)
+  }
+
+  // 更新团队
+  const handleUpdateTeam = async (teamName: string, teamMembers: string[]) => {
+    try {
+      await updateTeam(teamId ?? '', {
+        name: teamName,
+        members: teamMembers.join(','),
+      })
+      Toast.success('更新团队成功！')
+      setShowTeamModal(false)
+    } catch (error) {
+      Toast.error('更新团队失败！')
+    }
   }
 
   // 移除本地项目列表
@@ -221,7 +250,10 @@ function Project() {
             </button>
           </div>
 
-          <button className="daisy-btn daisy-btn-ghost daisy-btn-sm">
+          <button
+            className="daisy-btn daisy-btn-ghost daisy-btn-sm"
+            onClick={handleShowTeamModal}
+          >
             <AdjustmentsHorizontalIcon className="h-6 w-6" />
           </button>
         </div>
@@ -242,6 +274,15 @@ function Project() {
         open={showProjectModal}
         onCancel={() => setShowProjectModal(false)}
         onOk={handleCreateProject}
+      />
+
+      <TeamModal
+        ref={teamModalRef}
+        title="修改团队"
+        open={showTeamModal}
+        onOk={handleUpdateTeam}
+        onCancel={() => setShowTeamModal(false)}
+        clearOnClose
       />
     </div>
   )

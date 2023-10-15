@@ -44,3 +44,22 @@ export function updateProjectStatus(projectId: string, status: number) {
 export function deleteProject(projectId: string) {
   return _delete(`/project/${projectId}`)
 }
+
+interface TeamInfo {
+  creator_id: string
+  members: {
+    label: string
+    value: string
+    avatar?: string
+  }[]
+  name: string
+  team_id: string
+}
+
+export function fetchTeam(teamId: string) {
+  return _get<TeamInfo>(`/team/${teamId}`)
+}
+
+export function updateTeam(teamId: string, payload: { name?: string, members?: string }) {
+  return _patch(`/team/${teamId}`, payload)
+}

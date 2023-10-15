@@ -3,7 +3,14 @@
  * @Date: 2023-08-08 22:56:28
  * @Description:
  */
-import { useState, useMemo, ChangeEventHandler, useEffect } from 'react'
+import {
+  useState,
+  useMemo,
+  ChangeEventHandler,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+} from 'react'
 import { Input, Select, Tag, Space } from 'antd'
 import { useDebounceFn, useRequest } from 'ahooks'
 import { _get } from '@/helpers/request'
@@ -11,6 +18,10 @@ import Modal from '@/components/shared/modal'
 import Avatar from '@/components/shared/avatar'
 import { isNotEmpty, maxLength, minLength, validate } from '@/helpers/validator'
 import Toast from '@/components/shared/toast'
+
+export interface TeamModalRef {
+  setFieldsValue: (values: { teamName?: string, members?: any[] }) => void
+}
 
 export interface TeamModalProps {
   title?: string
@@ -38,7 +49,7 @@ function fetchSearchUser(keyword: string) {
   return _get<TeamMember[]>('/user/search', { keyword })
 }
 
-export default function TeamModal(props: TeamModalProps) {
+const TeamModal = forwardRef<TeamModalRef, TeamModalProps>((props, ref) => {
   const { title, open, onCancel, onOk, clearOnClose = false } = props
   const [teamName, setTeamName] = useState<string>('')
   const {
@@ -48,13 +59,29 @@ export default function TeamModal(props: TeamModalProps) {
     data: searchList,
   } = useRequest(fetchSearchUser, { manual: true })
   const { run: search } = useDebounceFn(run, { wait: 2000 })
-  const [memberIds, setMemberIds] = useState<string[]>([])
+  // const [memberIds, setMemberIds] = useState<string[]>([])
   const [members, setMembers] = useState<any[]>([])
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      setFieldsValue: (values) => {
+        const { teamName, members } = values
+        if(teamName !== null && teamName !== undefined) {
+          setTeamName(teamName)
+        }
+        if(members) {
+          setMembers(members)
+        }
+      },
+    }),
+    [],
+  )
 
   useEffect(() => {
     if (!open && clearOnClose) {
       setTeamName('')
-      setMemberIds([])
+      // setMemberIds([])
       setMembers([])
     }
   }, [clearOnClose, open])
@@ -86,7 +113,7 @@ export default function TeamModal(props: TeamModalProps) {
    * @return {void}
    */
   const handleSelectMember = (value: string, option: SearchOption) => {
-    setMemberIds([...memberIds, value])
+    // setMemberIds([...memberIds, value])
     setMembers([...members, option])
   }
 
@@ -96,7 +123,7 @@ export default function TeamModal(props: TeamModalProps) {
    * @return {void}
    */
   const handleRemoveMember = (member: SearchOption) => {
-    setMemberIds(memberIds.filter((id) => id !== member.value))
+    // setMemberIds(memberIds.filter((id) => id !== member.value))
     setMembers(members.filter((item) => item.value !== member.value))
   }
 
@@ -111,7 +138,8 @@ export default function TeamModal(props: TeamModalProps) {
       Toast.error(errorMsg)
       return
     }
-
+    const memberIds = members.map(item => item.value)
+    
     onOk && onOk(teamName, memberIds)
   }
 
@@ -175,4 +203,6 @@ export default function TeamModal(props: TeamModalProps) {
       </div>
     </Modal>
   )
-}
+})
+
+export default TeamModal

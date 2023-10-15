@@ -1,5 +1,4 @@
 import { _get, _patch, _post } from '@/helpers/request'
-import type { FileInfo } from '@/typings/base'
 import { TaskStatus } from '@/helpers/enum'
 
 export interface TaskCreatePayload {
@@ -55,15 +54,6 @@ export interface Task {
     name: string
     uid: string
   }
-}
-
-/**
- * @description: 上传文件
- * @param {FormData} formData
- * @return {*}
- */
-export function uploadFile(formData: FormData) {
-  return _post<FileInfo>('/common/upload', formData)
 }
 
 /**

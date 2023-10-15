@@ -3,7 +3,7 @@
  * @Date: 2023-07-22 01:12:46
  * @Description: 团队列表
  */
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRequest } from 'ahooks'
 import { PlusIcon } from '@heroicons/react/24/outline'

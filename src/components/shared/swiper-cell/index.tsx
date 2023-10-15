@@ -3,9 +3,10 @@
  * @Date: 2023-10-15 16:27:34
  * @Description: 滑块单元格
  */
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useId } from 'react'
 import type { ReactNode, MouseEvent } from 'react'
 import { browser } from '@/utils/utils'
+import swiperObserver from './swiper-observer'
 
 export interface SwiperCellProps {
   children?: ReactNode
@@ -14,6 +15,7 @@ export interface SwiperCellProps {
 
 function SwiperCell(props: SwiperCellProps) {
   const { children, right } = props
+  const swiperId = useId()
   const swiperCellRef = useRef<HTMLDivElement>(null)
   const rightAreaRef = useRef<HTMLDivElement>(null)
   const isTap = useRef(false)
@@ -23,14 +25,15 @@ function SwiperCell(props: SwiperCellProps) {
   const handleMouseDown = (e: MouseEvent | TouchEvent) => {
     if (!right) return
     isTap.current = true
+    swiperObserver.sync(swiperId)
     startX.current = browser.versions.mobile
       ? (e as TouchEvent).changedTouches[0].pageX
       : (e as MouseEvent).pageX
   }
 
   const handleMouseUp = () => {
+    if(!isTap.current) return
     isTap.current = false
-
     const rightAreaWidth = rightAreaRef.current?.offsetWidth ?? 0
     setMoveDistance((d) => (d > -rightAreaWidth * 0.1 ? 0 : -rightAreaWidth))
     startX.current = 0
@@ -51,13 +54,17 @@ function SwiperCell(props: SwiperCellProps) {
     setMoveDistance(distance)
   }
 
+  const autoShrink = () => {
+    setMoveDistance(0)
+  }
+
   useEffect(() => {
     const downEvent = browser.versions.mobile ? 'touchstart' : 'mousedown'
     const upEvent = browser.versions.mobile ? 'touchend' : 'mouseup'
     const moveEvent = browser.versions.mobile ? 'touchmove' : 'mousemove'
 
     swiperCellRef.current?.addEventListener(downEvent, handleMouseDown as any)
-    swiperCellRef.current?.addEventListener(upEvent, handleMouseUp as any)
+    document.addEventListener(upEvent, handleMouseUp as any)
     swiperCellRef.current?.addEventListener(moveEvent, handleMouseMove as any)
 
     return () => {
@@ -65,13 +72,21 @@ function SwiperCell(props: SwiperCellProps) {
         downEvent,
         handleMouseDown as any,
       )
-      swiperCellRef.current?.removeEventListener(upEvent, handleMouseUp as any)
+      document.removeEventListener(upEvent, handleMouseUp as any)
       swiperCellRef.current?.removeEventListener(
         moveEvent,
         handleMouseMove as any,
       )
     }
   }, [])
+
+  useEffect(() => {
+    swiperObserver.listen(swiperId, autoShrink)
+
+    return () => {
+      swiperObserver.remove(swiperId)
+    }
+  }, [swiperId])
 
   return (
     <div className="relative overflow-hidden">

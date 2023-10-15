@@ -19,6 +19,7 @@ import {
 import { useRequest } from 'ahooks'
 import { _get } from '@/helpers/request'
 import { TaskPriority, TaskStatus } from '@/helpers/enum'
+import { upload } from '@/helpers/upload-file'
 import { priorityColorMap, taskStatusMap } from '@/components/task/task-table'
 import Empty from '@/components/shared/empty'
 import Avatar from '@/components/shared/avatar'
@@ -29,7 +30,6 @@ import Toast from '@/components/shared/toast'
 import ContentEmpty from '@/assets/images/content-empty.png'
 import {
   updateTask,
-  uploadFile,
   TaskUpdatePayload,
 } from '@/views/task/service'
 
@@ -145,10 +145,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
       // 内容上传
       const { content } = formData
       if (content && content.trim() !== '') {
-        const blob = new Blob([content], { type: 'text/html' })
-        const formData = new FormData()
-        formData.append('file', blob, `${Date.now()}.html`)
-        const res = await uploadFile(formData)
+        const res = await upload('text/html', `${Date.now()}.html`, content)
         payload.content = res.url
       }
 
