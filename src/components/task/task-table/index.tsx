@@ -161,6 +161,7 @@ function TaskTable(props: TaskTableProps) {
       {
         title: '负责人',
         dataIndex: 'owners',
+        width: 120,
         render: (text) => {
           const list = text.map((item: any) => ({
             wrapperClassName: 'border-2',
@@ -170,7 +171,7 @@ function TaskTable(props: TaskTableProps) {
           }))
           return (
             <Avatar.Group
-              className="-space-x-2"
+              className="!-space-x-2"
               list={list}
               rowKey={(item) => item.uid}
             />
@@ -210,7 +211,7 @@ function TaskTable(props: TaskTableProps) {
       {
         title: '创建时间',
         dataIndex: 'createdAt',
-        render: (text) => dayjs(text).format('YYYY-MM-DD hh:mm:ss'),
+        render: (text) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '操作',

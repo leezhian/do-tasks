@@ -225,7 +225,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
             icon={<UserIcon className="h-3 w-3" />}
           >
             <Avatar.Group
-              className="-space-x-2"
+              className="!-space-x-2"
               list={owners}
               rowKey={(item) => item.uid}
             />
@@ -272,7 +272,7 @@ function TaskDetailDrawer(props: TaskDetailDrawerProps) {
             icon={<ClockIcon className="h-3 w-3" />}
           >
             <span>
-              {dayjs(dataSource?.createdAt).format('YYYY-MM-DD hh:mm:ss')}
+              {dayjs(dataSource?.createdAt).format('YYYY-MM-DD HH:mm:ss')}
             </span>
           </PropertyList.Item>
         </PropertyList>

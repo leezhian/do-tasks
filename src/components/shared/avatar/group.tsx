@@ -21,6 +21,7 @@ function AvatarGroup(props: AvatarGroupProps) {
 
     return list.slice(0, limit).concat({
       ...list[0],
+      uid: 'more',
       url: '',
       name: `+${list.length - limit}`,
       defaultAvatarFirstChar: false
