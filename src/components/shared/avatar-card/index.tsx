@@ -134,7 +134,7 @@ function AvatarCard(props: AvatarCardProps) {
           >
             <MagnifyingGlassIcon className=" h-6 w-6 shrink-0" />
             <div className="grow pl-2 text-base-content/50">
-              搜索任务 / 团队
+              搜索任务 / 项目
             </div>
             <div className="shrink-0 space-x-1 opacity-50">
               <kbd className="daisy-kbd daisy-kbd-sm">⌘</kbd>

@@ -234,7 +234,7 @@ function TaskTable(props: TaskTableProps) {
         ),
       },
     ]
-  }, [handleTaskStatusChange])
+  }, [handleTaskStatusChange, projectDetail])
 
   const onSelectChange = (newSelectedRowKeys: Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)

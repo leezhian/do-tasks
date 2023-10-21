@@ -144,7 +144,7 @@ function ProjectCard(props: ProjectCardProps) {
           </table>
 
           <div className="mt-auto text-xs text-base-content/40">
-            创建于{dayjs(dataSource?.create_time).format('YYYY-MM-DD')}
+            创建于{dayjs(dataSource?.createdAt).format('YYYY-MM-DD')}
           </div>
         </div>
       </div>

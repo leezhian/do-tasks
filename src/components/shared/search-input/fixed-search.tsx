@@ -88,7 +88,7 @@ const FixedSearch = memo((props: FixedSearchProps) => {
       <SearchInput
         className="!absolute left-1/2 top-20 z-10 w-130 max-w-[80%] -translate-x-1/2"
         ref={searchInputRef}
-        placeholder='搜索任务 / 团队'
+        placeholder='搜索任务 / 项目'
         loading={loading}
         searchList={data}
         onChange={handleSearchInputChange}
