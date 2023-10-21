@@ -14,8 +14,9 @@ import { useParams } from 'react-router-dom'
 import Avatar from '@/components/shared/avatar'
 import TaskDetailDrawer from '@/components/task/task-detail-drawer'
 import TaskActionsDropdown from '@/components/task/task-actions-dropdown'
-import { TaskPriority, TaskStatus } from '@/helpers/enum'
-import { getTaskList, updateTaskStatus, Task } from '@/views/task/service'
+import Toast from '@/components/shared/toast'
+import { TaskPriority, TaskStatus, ProjectStatus } from '@/helpers/enum'
+import { getProjectDetail, getTaskList, updateTaskStatus, Task } from '@/views/task/service'
 
 // 优先级颜色映射
 export const priorityColorMap = {
@@ -94,6 +95,9 @@ function TaskTable(props: TaskTableProps) {
       ],
     },
   )
+  const { data: projectDetail } = useRequest(() => getProjectDetail(projectId as string), {
+    refreshDeps: [projectId],
+  })
 
   useEffect(() => {
     setCurrentPage(1)
@@ -107,6 +111,11 @@ function TaskTable(props: TaskTableProps) {
 
   // 任务状态修改
   const handleTaskStatusChange = useCallback(async (record: Task, status: TaskStatus) => {
+    console.log(projectDetail)
+    if (projectDetail?.status !== ProjectStatus.Active) {
+      Toast.warning('项目已归档，无法操作')
+      return
+    }
     await updateTaskStatus(record.task_id, status)
 
     setTaskList(tl => {

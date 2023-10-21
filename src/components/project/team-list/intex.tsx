@@ -57,7 +57,7 @@ function TeamList() {
     try {
       const res = await _post<TeamItem>('/team/create', {
         name: teamName,
-        merbers: teamMembers.join(','),
+        members: teamMembers.join(','),
       })
 
       setTeamList((prev) => [res, ...prev])

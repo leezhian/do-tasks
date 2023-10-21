@@ -114,7 +114,7 @@ const TeamModal = forwardRef<TeamModalRef, TeamModalProps>((props, ref) => {
    */
   const handleSelectMember = (value: string, option: SearchOption) => {
     // setMemberIds([...memberIds, value])
-    setMembers([...members, option])
+    setMembers(m => [...m, option])
   }
 
   /**
