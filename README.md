@@ -4,6 +4,10 @@
 
 > 💾 **服务端**：[do tasks server](https://github.com/leezhian/do-tasks-server)
 
+![主题和响应式布局](./preview/1.png)
+![任务进度跟踪](./preview/2.png)
+![任务搜索](./preview/3.png)
+
 
 
 ## ✨ 特性
@@ -56,9 +60,12 @@ pnpm build
 - [ ] Modal 组件处理优化
 - [ ] 移除 Antd 库
 - [ ] 动画完善
-- [ ] 新增 PWA 支持
 - [ ] 支持自动化部署
 
 
-
 ## 📌 已知问题记录
+
+1. 添加 or 修改数据后本地数据未刷新
+2. 归档后项目仍允许编辑（期望是不允许的）
+3. 搜索跳转优化
+4. 消息功能不全
